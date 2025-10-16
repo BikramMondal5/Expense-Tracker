@@ -178,6 +178,30 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
     def on_leave(e):
         e.widget['background'] = "#E0E7FF"
 
+    def complete_onboarding(budget, currency):
+        try:
+            monthly_budget = float(budget)
+            if monthly_budget <= 0:
+                messagebox.showwarning("Invalid Budget", "Monthly budget must be greater than zero.")
+                return
+
+            currency_symbol = currency.split('(')[1].split(')')[0]
+            currency_code = currency.split(' - ')[0]
+
+            config.save_user_settings(auth_manager.get_current_user(), monthly_budget, currency_symbol, currency_code)
+            
+            messagebox.showinfo("Setup Complete", "Your settings have been saved successfully!")
+            
+            # This will destroy the onboarding screen and show the main application
+            app_instance.show_main_app()
+
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a valid number for the budget.")
+        except IndexError:
+            messagebox.showerror("Invalid Currency", "Please select a valid currency.")
+        except Exception as e:
+            messagebox.showerror("Error", f"An unexpected error occurred: {e}")
+
     for r_idx, row in enumerate(keys):
         keypad_frame.grid_rowconfigure(r_idx, weight=1)
         for c_idx, key in enumerate(row):
@@ -203,31 +227,18 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
             if key == "⌫":
                 key_button.config(fg="#312E81")
 
-    # Spacer
-    tk.Frame(content_frame, bg=white, height=10).pack()
-    
-    # Complete Setup button
-    complete_btn = tk.Button(
+    # Complete Setup Button
+    complete_setup_btn = tk.Button(
         content_frame,
-        text="✓",
-        font=("Segoe UI", 16, "bold"),
-        bg="#22C55E",
-        fg="#FFFFFF",
-        activebackground="#16A34A",
-        activeforeground="#FFFFFF",
+        text="Complete Setup",
+        font=("Segoe UI", 14, "bold"),
+        bg="#3591e2",
+        fg="white",
+        activebackground="#2c79c1",
+        activeforeground="white",
         relief=tk.FLAT,
         bd=0,
         cursor="hand2",
-        command=lambda: app_instance.handle_onboarding_data(budget_value_label.cget("text"), currency_var.get())
+        command=lambda: complete_onboarding(budget_value_label.cget("text"), currency_var.get())
     )
-    complete_btn.pack(fill=tk.X, ipady=14, pady=(10, 5))
-    
-    # Hover effect
-    def on_enter_complete(e):
-        complete_btn.config(bg="#16A34A")
-    
-    def on_leave_complete(e):
-        complete_btn.config(bg="#22C55E")
-    
-    complete_btn.bind("<Enter>", on_enter_complete)
-    complete_btn.bind("<Leave>", on_leave_complete)
+    complete_setup_btn.pack(fill=tk.X, ipady=12, pady=(20, 0))
