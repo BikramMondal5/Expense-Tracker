@@ -9,24 +9,21 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
         widget.destroy()
 
     # Main container
-    main_frame = tk.Frame(root, bg=bg_light)
+    main_frame = tk.Frame(root, bg="#EEF2FF")
     main_frame.pack(fill=tk.BOTH, expand=True)
 
     # Center content container
-    center_frame = tk.Frame(main_frame, bg=white)
+    center_frame = tk.Frame(main_frame, bg="#FFFFFF")
     center_frame.place(relx=0.5, rely=0.5, anchor="center", width=500, height=760)
 
-    # Add shadow effect
-    shadow_frame = tk.Frame(main_frame, bg="#E2E8F0")
-    shadow_frame.place(relx=0.5, rely=0.505, anchor="center", width=505, height=655)
-    center_frame.lift()
+
 
     # Content padding frame
     content_frame = tk.Frame(center_frame, bg=white)
     content_frame.pack(fill=tk.BOTH, expand=True, padx=40, pady=40)
 
     # Icon
-    icon_frame = tk.Frame(content_frame, bg="#F8FAFC", width=80, height=80)
+    icon_frame = tk.Frame(content_frame, bg="#FFFFFF", width=80, height=80)
     icon_frame.pack(pady=(10, 20))
     icon_frame.pack_propagate(False)
     icon_frame.layer = True
@@ -37,15 +34,15 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
         icon_frame,
         text="🚀",  # Rocket icon for onboarding
         font=("Segoe UI Emoji", 30),
-        bg="#F8FAFC",
-        fg="#1E293B"
+        bg="#FFFFFF",
+        fg="#6366F1"
     )
     onboarding_icon_label.place(relx=0.5, rely=0.5, anchor="center")
 
     # Title
     title_label = tk.Label(
         content_frame,
-        text="Set up Your monthly Budget",
+        text="Set up Your Monthly Budget",
         font=("Segoe UI", 22, "bold"),
         bg="#FFFFFF",
         fg="#1E293B"
@@ -112,7 +109,7 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
         text="0",
         font=("Segoe UI", 32, "bold"),
         bg="#F8FAFC",
-        fg="#1E293B"
+        fg="#111827"
     )
     budget_value_label.pack(side=tk.LEFT, padx=(20, 0), expand=True, fill=tk.BOTH)
 
@@ -121,7 +118,7 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
         text="INR",
         font=("Segoe UI", 16),
         bg="#F8FAFC",
-        fg="#64748B"
+        fg="#111827"
     )
     budget_currency_code_label.pack(side=tk.LEFT, padx=(0, 10))
 
@@ -129,8 +126,8 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
         budget_display_frame,
         text="✕",
         font=("Segoe UI", 16, "bold"),
-        bg="#F8FAFC",
-        fg="#64748B",
+        bg="#FEE2E2",
+        fg="#B91C1C",
         cursor="hand2"
     )
     clear_budget_btn.pack(side=tk.RIGHT, padx=(0, 15))
@@ -176,10 +173,10 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
     ]
 
     def on_enter(e):
-        e.widget['background'] = "#E2E8F0"
+        e.widget['background'] = "#C7D2FE"
 
     def on_leave(e):
-        e.widget['background'] = "#F8FAFC"
+        e.widget['background'] = "#E0E7FF"
 
     for r_idx, row in enumerate(keys):
         keypad_frame.grid_rowconfigure(r_idx, weight=1)
@@ -190,10 +187,10 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
                 keypad_frame,
                 text=key,
                 font=("Segoe UI", 22, "bold"),
-                bg="#F8FAFC",
-                fg="#1E293B",
-                activebackground="#E2E8F0",
-                activeforeground="#1E293B",
+                bg="#E0E7FF",
+                fg="#312E81",
+                activebackground="#C7D2FE",
+                activeforeground="#312E81",
                 relief=tk.FLAT,
                 bd=0,
                 cursor="hand2",
@@ -204,7 +201,7 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
             key_button.bind("<Leave>", on_leave)
 
             if key == "⌫":
-                key_button.config(fg="#64748B")
+                key_button.config(fg="#312E81")
 
     # Spacer
     tk.Frame(content_frame, bg=white, height=10).pack()
@@ -212,11 +209,11 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
     # Complete Setup button
     complete_btn = tk.Button(
         content_frame,
-        text="Complete Setup",
-        font=("Segoe UI", 13, "bold"),
-        bg="#48BB78",
+        text="✓",
+        font=("Segoe UI", 16, "bold"),
+        bg="#22C55E",
         fg="#FFFFFF",
-        activebackground="#38a169",
+        activebackground="#16A34A",
         activeforeground="#FFFFFF",
         relief=tk.FLAT,
         bd=0,
@@ -226,11 +223,11 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
     complete_btn.pack(fill=tk.X, ipady=14, pady=(10, 5))
     
     # Hover effect
-    def on_enter(e):
-        complete_btn.config(bg="#38a169")
+    def on_enter_complete(e):
+        complete_btn.config(bg="#16A34A")
     
-    def on_leave(e):
-        complete_btn.config(bg="#48BB78")
+    def on_leave_complete(e):
+        complete_btn.config(bg="#22C55E")
     
-    complete_btn.bind("<Enter>", on_enter)
-    complete_btn.bind("<Leave>", on_leave)
+    complete_btn.bind("<Enter>", on_enter_complete)
+    complete_btn.bind("<Leave>", on_leave_complete)

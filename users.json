@@ -115,5 +115,21 @@
         "monthly_budget": null,
         "currency": null,
         "cash_balance": null
+    },
+    "y@gmail.com": {
+        "name": "y",
+        "password": "1be0222750aaf3889ab95b5d593ba12e4ff1046474702d6b4779f4b527305b23",
+        "created_at": "2025-10-16T21:07:36.190910",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": null
+    },
+    "n@gmail.com": {
+        "name": "n",
+        "password": "3ab77234739031c6a34fcde592bc59fd8bd737657014a53777d536110c8cfc93",
+        "created_at": "2025-10-16T21:16:02.881319",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": null
     }
 }
