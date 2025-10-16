@@ -1,0 +1,11 @@
+PRIMARY_COLOR = "#667eea"
+SECONDARY_COLOR = "#764ba2"
+ACCENT_COLOR = "#f093fb"
+BG_LIGHT = "#f5f7fa"
+TEXT_DARK = "#2d3748"
+TEXT_LIGHT = "#718096"
+WHITE = "#ffffff"
+SUCCESS = "#48bb78"
+ERROR = "#f56565"
+
+USERS_FILE = "users.json"
