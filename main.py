@@ -390,15 +390,23 @@ class LoginSignupApp:
         # Scrollable form container
         canvas = tk.Canvas(right_panel, bg=self.WHITE, highlightthickness=0)
         scrollbar = tk.Scrollbar(right_panel, orient="vertical", command=canvas.yview)
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
         scrollable_frame = tk.Frame(canvas, bg=self.WHITE)
         
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-        )
+        def _on_frame_configure(event):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+
+        scrollable_frame.bind("<Configure>", _on_frame_configure)
         
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width=canvas.winfo_width(), height=canvas.winfo_height())
+        canvas_window = canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
         canvas.configure(yscrollcommand=scrollbar.set)
+        
+        def _on_canvas_configure(event):
+            canvas.itemconfig(canvas_window, width=event.width)
+
+        canvas.bind("<Configure>", _on_canvas_configure)
         
         # Form container with padding
         form_container = tk.Frame(scrollable_frame, bg=self.WHITE)
@@ -610,9 +618,6 @@ class LoginSignupApp:
         login_link.bind("<Button-1>", lambda e: self.show_login_screen())
         login_link.bind("<Enter>", lambda e: login_link.config(fg=self.ACCENT_COLOR))
         login_link.bind("<Leave>", lambda e: login_link.config(fg=self.SECONDARY_COLOR))
-        
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
     
     def handle_signup(self, name, email, password, confirm_password, terms_agreed):
         """Handle signup logic"""
