@@ -147,5 +147,69 @@
         "monthly_budget": null,
         "currency": null,
         "cash_balance": null
+    },
+    "bf@gmail.com": {
+        "name": "B",
+        "password": "ba6b85780d39f32013539a33530af5b621051a89e13b1f5111a5b9b9c3d5bbb9",
+        "created_at": "2025-10-17T16:10:13.600189",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": null
+    },
+    "ghost@gmail.com": {
+        "name": "ghost",
+        "password": "1e2f300395909c25859d36ca8f60990e2df72832d3f845a01a87d5d5cddf8009",
+        "created_at": "2025-10-17T16:37:49.193772",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": null
+    },
+    "tab5@gmail.com": {
+        "name": "tab",
+        "password": "46943fc64fa365cae03a826344e51440a49251eb06a8beef2d318ed8122e34c7",
+        "created_at": "2025-10-17T16:42:25.463719",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": null
+    },
+    "4e@gmail.com": {
+        "name": "4e",
+        "password": "f9cfead58877085d77444b12ee70fe39e9395f1eadd152409b63b89fd6b82305",
+        "created_at": "2025-10-17T16:58:20.131112",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": null
+    },
+    "Back@gmail.com": {
+        "name": "Back",
+        "password": "44de9ea2fd12e4d06ee6b4b3bb517668f09024f6b9b5a97b611a4500fcd113dc",
+        "created_at": "2025-10-17T17:01:31.263084",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": null
+    },
+    "sd@gmail.com": {
+        "name": "gh",
+        "password": "a370a799adedc6f572851b05fe6e3a02d9f7110d4f249c2e6619ec0d6a63d381",
+        "created_at": "2025-10-17T17:06:39.811853",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": null
+    },
+    "py@gmail.com": {
+        "name": "py",
+        "password": "795c2987204d3eeba0fb7a90aa8172ff5ea5f2b1425b3085d3d42d6c52cd69f4",
+        "created_at": "2025-10-17T17:11:32.021364",
+        "monthly_budget": 1300.0,
+        "currency": "INR",
+        "cash_balance": 0.0
+    },
+    "fulll@gmail.com": {
+        "name": "full",
+        "password": "a3a8e2016980299b8eb9fbc7465f3691badf14cc61195fb252deced0a99cdf20",
+        "created_at": "2025-10-17T17:16:37.309689",
+        "monthly_budget": 3500.0,
+        "currency": "INR",
+        "cash_balance": 0.0
     }
 }

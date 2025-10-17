@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import config
 import onboarding_screen # Import the new module
+import user_dashboard # Import the new module
 
 class UIManager:
     def __init__(self, root, auth_manager, app_instance):
@@ -566,52 +567,6 @@ class UIManager:
         """Show main dashboard (placeholder)"""
         self.clear_frame()
         
-        dashboard_frame = tk.Frame(self.root, bg=self.PRIMARY_COLOR)
-        dashboard_frame.pack(fill=tk.BOTH, expand=True)
-        
-        welcome_label = tk.Label(
-            dashboard_frame,
-            text=f"Welcome, {self.auth_manager.get_current_user_data()['name']}!",
-            font=("Segoe UI", 28, "bold"),
-            bg=self.PRIMARY_COLOR,
-            fg=self.WHITE
-        )
-        welcome_label.pack(expand=True)
-        
-        message_label = tk.Label(
-            dashboard_frame,
-            text="🎉 Login Successful!\n\nExpense Tracker Main App Coming Next...",
-            font=("Segoe UI", 16),
-            bg=self.PRIMARY_COLOR,
-            fg=self.WHITE
-        )
-        message_label.pack(expand=True)
-        
-        # Display user's setup info
-        user_data = self.auth_manager.get_current_user_data()
-        info_text = f"Monthly Budget: {user_data.get('currency', 'INR')} {user_data.get('monthly_budget', 'Not set')}\n"
-        info_text += f"Cash Balance: {user_data.get('currency', 'INR')} {user_data.get('cash_balance', 'Not set')}"
-        
-        info_label = tk.Label(
-            dashboard_frame,
-            text=info_text,
-            font=("Segoe UI", 12),
-            bg=self.PRIMARY_COLOR,
-            fg=self.WHITE
-        )
-        info_label.pack(expand=True)
-        
-        logout_btn = tk.Button(
-            dashboard_frame,
-            text="Logout",
-            font=("Segoe UI", 12, "bold"),
-            bg=self.WHITE,
-            fg=self.PRIMARY_COLOR,
-            relief=tk.FLAT,
-            bd=0,
-            cursor="hand2",
-            command=self.app_instance.show_login_screen,
-            padx=40,
-            pady=12
-        )
-        logout_btn.pack(pady=30)
+        # Instantiate and display the UserDashboard
+        dashboard_instance = user_dashboard.UserDashboard(self.root, self.auth_manager, self.app_instance)
+        dashboard_instance.display_dashboard()
