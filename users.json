@@ -267,5 +267,21 @@
         "monthly_budget": 5000.0,
         "currency": "INR",
         "cash_balance": 0.0
+    },
+    "Sevjipay366@elygifts.com": {
+        "name": "sejipay366@elygifts.com",
+        "password": "34d5180d9c545e3b9b0695eb9a8281145ed61eedd3a0c20dbbe8a98f15b0a49b",
+        "created_at": "2025-10-18T22:22:29.509364",
+        "monthly_budget": 650.0,
+        "currency": "INR",
+        "cash_balance": 0.0
+    },
+    "Sejiparey366@elygifts.com": {
+        "name": "Sejipay366@elygifts.com",
+        "password": "de6964bf593b087051fd9d99fd9be0fadc832d8f609c89aa77c6ed6bf34b9938",
+        "created_at": "2025-10-18T22:29:19.953030",
+        "monthly_budget": 2689.0,
+        "currency": "INR",
+        "cash_balance": 0.0
     }
 }

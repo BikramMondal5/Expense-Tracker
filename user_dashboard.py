@@ -50,6 +50,25 @@ class UserDashboard:
         self.FONT_3XL = (config.FONT_PRIMARY, 24, "bold")
         self.FONT_TITLE = (config.FONT_PRIMARY, 24, "bold")
 
+        self.dark_mode_enabled = tk.BooleanVar(value=False)
+        self.hide_amounts_enabled = tk.BooleanVar(value=False)
+
+    def toggle_dark_mode(self):
+        """Toggle dark mode"""
+        self.dark_mode_enabled.set(not self.dark_mode_enabled.get())
+        if self.dark_mode_enabled.get():
+            messagebox.showinfo("Dark Mode", "Dark mode enabled (UI colors not yet implemented).")
+        else:
+            messagebox.showinfo("Dark Mode", "Dark mode disabled.")
+
+    def toggle_hide_amounts(self):
+        """Toggle hiding of amounts"""
+        self.hide_amounts_enabled.set(not self.hide_amounts_enabled.get())
+        if self.hide_amounts_enabled.get():
+            messagebox.showinfo("Hide Amounts", "Amounts are now hidden.")
+        else:
+            messagebox.showinfo("Hide Amounts", "Amounts are now visible.")
+
     def clear_frame(self):
         """Clear all widgets from root"""
         for widget in self.root.winfo_children():
@@ -83,14 +102,26 @@ class UserDashboard:
         main_container = tk.Frame(self.root, bg=self.BG_LIGHT)
         main_container.pack(fill=tk.BOTH, expand=True)
         
+        # Configure grid for main_container: sidebar (column 0) and content (column 1)
+        main_container.grid_columnconfigure(0, weight=0) # Sidebar will have fixed width
+        main_container.grid_columnconfigure(1, weight=1) # Content will expand
+        main_container.grid_rowconfigure(0, weight=1)
+
+        # ===== LEFT SIDEBAR =====
+        self._create_sidebar(main_container)
+
+        # ===== CONTENT FRAME =====
+        content_frame = tk.Frame(main_container, bg=self.BG_LIGHT)
+        content_frame.grid(row=0, column=1, sticky="nsew")
+
         # ===== FULL-WIDTH HEADER =====
-        self._create_header(main_container)
+        self._create_header(content_frame)
         
         # ===== SCROLLABLE CONTENT AREA =====
-        content_canvas = tk.Canvas(main_container, bg=self.BG_LIGHT, highlightthickness=0)
-        content_scrollbar = ttk.Scrollbar(main_container, orient="vertical", command=content_canvas.yview)
+        content_canvas = tk.Canvas(content_frame, bg=self.BG_LIGHT, highlightthickness=0)
+        content_scrollbar = ttk.Scrollbar(content_frame, orient="vertical", command=content_canvas.yview)
         scrollable_frame = tk.Frame(content_canvas, bg=self.BG_LIGHT)
-        
+
         scrollable_frame.bind(
             "<Configure>",
             lambda e: content_canvas.configure(scrollregion=content_canvas.bbox("all"))
@@ -1070,6 +1101,236 @@ class UserDashboard:
         fab_button.bind("<Enter>", on_fab_enter)
         fab_button.bind("<Leave>", on_fab_leave)
 
+    def _create_sidebar(self, parent):
+        """Create the left sidebar with profile, navigation, and settings"""
+        sidebar_width = 280
+        sidebar_frame = tk.Frame(parent, bg=self.WHITE, width=sidebar_width)
+        sidebar_frame.grid(row=0, column=0, sticky="nsew")
+        sidebar_frame.pack_propagate(False) # Prevent frame from resizing to content
+
+        # Scrollable area for sidebar content
+        sidebar_canvas = tk.Canvas(sidebar_frame, bg=self.WHITE, highlightthickness=0)
+        sidebar_scrollbar = ttk.Scrollbar(sidebar_frame, orient="vertical", command=sidebar_canvas.yview)
+        scrollable_sidebar_frame = tk.Frame(sidebar_canvas, bg=self.WHITE)
+
+        scrollable_sidebar_frame.bind(
+            "<Configure>",
+            lambda e: sidebar_canvas.configure(scrollregion=sidebar_canvas.bbox("all"))
+        )
+
+        sidebar_canvas.create_window((0, 0), window=scrollable_sidebar_frame, anchor="nw")
+        sidebar_canvas.configure(yscrollcommand=sidebar_scrollbar.set)
+
+        sidebar_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        sidebar_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Add mouse wheel scrolling to sidebar
+        def _on_sidebar_mousewheel(event):
+            sidebar_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        sidebar_canvas.bind_all("<MouseWheel>", _on_sidebar_mousewheel)
+
+        # Custom style for the switch toggle
+        style = ttk.Style()
+        style.theme_use('default')
+        style.map("Switch.TCheckbutton",
+            background=[('active', self.WHITE), ('selected', self.ACCENT_COLOR)],
+            foreground=[('selected', self.WHITE)],
+            indicatorbackground=[('selected', self.ACCENT_COLOR)],
+            indicatorforeground=[('selected', self.WHITE)]
+        )
+
+        # Profile Section
+        profile_frame = tk.Frame(scrollable_sidebar_frame, bg=self.PRIMARY_COLOR, padx=20, pady=20)
+        profile_frame.pack(fill=tk.X)
+
+        profile_icon = tk.Label(
+            profile_frame,
+            text="👤",
+            font=self.FONT_3XL,
+            bg=self.PRIMARY_COLOR,
+            fg=self.WHITE
+        )
+        profile_icon.pack(anchor="w")
+
+        user_name = self.auth_manager.get_current_user_data().get('name', 'User')
+        profile_name = tk.Label(
+            profile_frame,
+            text=user_name.capitalize(),
+            font=self.FONT_XXL,
+            bg=self.PRIMARY_COLOR,
+            fg=self.WHITE
+        )
+        profile_name.pack(anchor="w", pady=(10, 0))
+
+        tk.Label(
+            profile_frame,
+            text="My Wallet",
+            font=self.FONT_BODY,
+            bg=self.PRIMARY_COLOR,
+            fg="#d8e0f0"
+        ).pack(anchor="w")
+
+        # Navigation Links
+        nav_frame = tk.Frame(scrollable_sidebar_frame, bg=self.WHITE, padx=10, pady=10)
+        nav_frame.pack(fill=tk.BOTH, expand=True)
+
+        nav_items_top = [
+            ("⬆️", "Get Premium"),
+            ("🏦", "Bank Sync"),
+            ("⬇️", "Imports"),
+        ]
+        self._create_nav_section(nav_frame, nav_items_top, section_title=None)
+
+        tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
+
+        nav_items_main = [
+            ("🏠", "Home"),
+            ("📋", "Records"),
+            ("📈", "Investments", "New"),
+            ("📊", "Statistics", "New"),
+            ("🗓️", "Planned payments"),
+            ("💰", "Budgets"),
+            ("📉", "Debts"),
+            ("🎯", "Goals"),
+            ("💼", "Wallet for your business", "New"),
+        ]
+        self._create_nav_section(nav_frame, nav_items_main, section_title=None)
+
+        tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
+
+        nav_items_more = [
+            ("🛒", "Shopping lists"),
+            ("🛡️", "Warranties"),
+            ("💳", "Loyalty cards"),
+            ("💱", "Currency rates"),
+            ("👥", "Group sharing"),
+            ("•••", "Others"),
+        ]
+        self._create_nav_section(nav_frame, nav_items_more, section_title=None)
+
+        tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
+
+        # Settings and Utilities
+        settings_frame = tk.Frame(scrollable_sidebar_frame, bg=self.WHITE, padx=10, pady=10)
+        settings_frame.pack(fill=tk.X, expand=True)
+
+        settings_items = [
+            ("🌚", "Dark mode", "toggle"),
+            ("🙈", "Hide Amounts", "toggle"),
+            ("✉️", "Invite friends"),
+            ("💖", "Follow us"),
+            ("❓", "Help"),
+            ("⚙️", "Settings"),
+        ]
+
+        for icon, text, *args in settings_items:
+            item_frame = tk.Frame(settings_frame, bg=self.WHITE, cursor="hand2")
+            item_frame.pack(fill=tk.X, pady=2)
+
+            tk.Label(
+                item_frame,
+                text=icon,
+                font=self.FONT_MD,
+                bg=self.WHITE,
+                fg=self.TEXT_DARK
+            ).pack(side=tk.LEFT, padx=(0, 8), pady=8)
+
+            tk.Label(
+                item_frame,
+                text=text,
+                font=self.FONT_BODY,
+                bg=self.WHITE,
+                fg=self.TEXT_DARK
+            ).pack(side=tk.LEFT, pady=8, anchor="w")
+
+            if text == "Dark mode":
+                toggle_switch = ttk.Checkbutton(item_frame, text="", variable=self.dark_mode_enabled, style="Switch.TCheckbutton", command=self.toggle_dark_mode)
+                toggle_switch.pack(side=tk.RIGHT, padx=5)
+            elif text == "Hide Amounts":
+                toggle_switch = ttk.Checkbutton(item_frame, text="", variable=self.hide_amounts_enabled, style="Switch.TCheckbutton", command=self.toggle_hide_amounts)
+                toggle_switch.pack(side=tk.RIGHT, padx=5)
+            else:
+                pass # No toggle for other items
+            
+            def on_enter(e, frame=item_frame):
+                frame.config(bg=self.BG_LIGHT)
+                for child in frame.winfo_children():
+                    if isinstance(child, tk.Label):
+                        child.config(bg=self.BG_LIGHT)
+
+            def on_leave(e, frame=item_frame):
+                frame.config(bg=self.WHITE)
+                for child in frame.winfo_children():
+                    if isinstance(child, tk.Label):
+                        child.config(bg=self.WHITE)
+            
+            item_frame.bind("<Enter>", on_enter)
+            item_frame.bind("<Leave>", on_leave)
+            # Only bind Button-1 for non-toggle items
+            if text not in ["Dark mode", "Hide Amounts"]:
+                item_frame.bind("<Button-1>", lambda e, txt=text: messagebox.showinfo("Sidebar", f"{txt} clicked!"))
+
+    def _create_nav_section(self, parent, items, section_title=None):
+        """Helper to create a section of navigation links"""
+        if section_title:
+            tk.Label(
+                parent,
+                text=section_title,
+                font=self.FONT_SUBHEADER,
+                bg=self.WHITE,
+                fg=self.TEXT_DARK,
+                anchor="w"
+            ).pack(fill=tk.X, pady=(10, 5), padx=5)
+
+        for icon, text, *args in items:
+            item_frame = tk.Frame(parent, bg=self.WHITE, cursor="hand2")
+            item_frame.pack(fill=tk.X, pady=2)
+
+            tk.Label(
+                item_frame,
+                text=icon,
+                font=self.FONT_MD,
+                bg=self.WHITE,
+                fg=self.TEXT_DARK
+            ).pack(side=tk.LEFT, padx=(0, 8), pady=8)
+
+            tk.Label(
+                item_frame,
+                text=text,
+                font=self.FONT_BODY,
+                bg=self.WHITE,
+                fg=self.TEXT_DARK
+            ).pack(side=tk.LEFT, pady=8, anchor="w")
+
+            if "New" in args:
+                tk.Label(
+                    item_frame,
+                    text="New",
+                    font=self.FONT_CAPTION,
+                    bg=self.ACCENT_COLOR,
+                    fg=self.WHITE,
+                    padx=5,
+                    relief=tk.FLAT,
+                    bd=0,
+                    anchor="e"
+                ).pack(side=tk.RIGHT, padx=5)
+            
+            def on_enter(e, frame=item_frame):
+                frame.config(bg=self.BG_LIGHT)
+                for child in frame.winfo_children():
+                    if isinstance(child, tk.Label):
+                        child.config(bg=self.BG_LIGHT)
+
+            def on_leave(e, frame=item_frame):
+                frame.config(bg=self.WHITE)
+                for child in frame.winfo_children():
+                    if isinstance(child, tk.Label):
+                        child.config(bg=self.WHITE)
+
+            item_frame.bind("<Enter>", on_enter)
+            item_frame.bind("<Leave>", on_leave)
+            item_frame.bind("<Button-1>", lambda e, txt=text: messagebox.showinfo("Sidebar", f"{txt} clicked!"))
+
     # OLD METHODS - TO BE REMOVED OR KEPT FOR COMPATIBILITY
     def toggle_sidebar(self):
         """Legacy method - no longer used in new dashboard"""
@@ -1104,8 +1365,6 @@ class UserDashboard:
                 l.sort(key=lambda t: float(t[0].replace('₹', '').replace(',', '').replace('+', '').replace('-', '')), reverse=reverse)
             except:
                 l.sort(reverse=reverse)
-        else:
-            l.sort(reverse=reverse)
 
         # rearrange items in sorted order
         for index, (val, k) in enumerate(l):
