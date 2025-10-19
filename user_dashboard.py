@@ -439,9 +439,9 @@ class UserDashboard:
         content_frame = tk.Frame(card_frame, bg=self.WHITE)
         content_frame.pack(fill=tk.BOTH, expand=True)
         
-        # Chart on left
+        # Chart on top
         chart_frame = tk.Frame(content_frame, bg=self.WHITE)
-        chart_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        chart_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         
         # Sample data
         categories = list(self.CATEGORY_COLORS.keys())
@@ -462,7 +462,7 @@ class UserDashboard:
         
         # Style the percentage text
         for autotext in autotexts:
-            autotext.set_color('white')
+            autotext.set_color(self.TEXT_DARK) # Changed to TEXT_DARK (black)
             autotext.set_fontsize(9)
             autotext.set_weight('bold')
         
@@ -483,44 +483,56 @@ class UserDashboard:
         canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
         
-        # Legend on right
+        # Legend below chart
         legend_frame = tk.Frame(content_frame, bg=self.WHITE)
-        legend_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(12, 0))
+        legend_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(12, 0)) # Positioned below
         
-        tk.Label(
-            legend_frame,
-            text="Breakdown",
-            font=self.FONT_SUBHEADER,
-            bg=self.WHITE,
-            fg=self.TEXT_DARK
-        ).pack(anchor="w", pady=(0, 8))
+        # Removed "Breakdown" title
+        # tk.Label(
+        #     legend_frame,
+        #     text="Breakdown",
+        #     font=self.FONT_HEADER, # Increased font size
+        #     bg=self.WHITE,
+        #     fg=self.TEXT_DARK
+        # ).pack(anchor="w", pady=(0, 8))
+        
+        # Arrange items horizontally with wrap-like effect
+        row_num = 0
+        col_num = 0
+        max_cols = 6 # Changed to 6 items per row
         
         for category, value, color in zip(categories, values, colors):
             item_frame = tk.Frame(legend_frame, bg=self.WHITE)
-            item_frame.pack(fill=tk.X, pady=3)
+            item_frame.grid(row=row_num, column=col_num, sticky="w", padx=5, pady=3)
             
-            # Color tag
-            color_tag = tk.Label(item_frame, text="  ", bg=color, width=2)
-            color_tag.pack(side=tk.LEFT, padx=(0, 8))
+            # Color tag (now a circle on canvas)
+            color_canvas = tk.Canvas(item_frame, width=16, height=16, bg=self.WHITE, highlightthickness=0)
+            color_canvas.pack(side=tk.LEFT, padx=(0, 8), pady=0) # Adjust pady if needed
+            color_canvas.create_oval(2, 2, 14, 14, fill=color, outline="", width=0)
             
             # Category name
             tk.Label(
                 item_frame,
                 text=category,
-                font=self.FONT_CAPTION,
+                font=self.FONT_BODY, # Increased font size
                 bg=self.WHITE,
                 fg=self.TEXT_DARK,
                 anchor="w"
             ).pack(side=tk.LEFT, fill=tk.X, expand=True)
             
-            # Percentage
-            tk.Label(
-                item_frame,
-                text=f"{value}%",
-                font=self.FONT_CAPTION,
-                bg=self.WHITE,
-                fg=self.TEXT_LIGHT
-            ).pack(side=tk.RIGHT)
+            # Removed percentage value
+            # tk.Label(
+            #     item_frame,
+            #     text=f"{value}%",
+            #     font=self.FONT_BODY, # Increased font size
+            #     bg=self.WHITE,
+            #     fg=self.TEXT_LIGHT
+            # ).pack(side=tk.RIGHT)
+
+            col_num += 1
+            if col_num >= max_cols:
+                col_num = 0
+                row_num += 1
     
     def _create_accounts_carousel(self, parent):
         """Create the accounts carousel"""
@@ -1029,7 +1041,7 @@ class UserDashboard:
         
         # Container for FAB and sub-buttons
         fab_container = tk.Frame(parent, bg=self.BG_LIGHT)
-        fab_container.place(relx=0.95, rely=0.93, anchor=tk.SE)
+        fab_container.place(relx=0.98, rely=0.98, anchor=tk.SE)
         
         # Sub-buttons frame (initially hidden)
         self.fab_sub_frame = tk.Frame(fab_container, bg=self.BG_LIGHT)
