@@ -112,7 +112,7 @@ class UserDashboard:
 
         # ===== CONTENT FRAME =====
         content_frame = tk.Frame(main_container, bg=self.BG_LIGHT)
-        content_frame.grid(row=0, column=1, sticky="nsew")
+        content_frame.grid(row=0, column=1, sticky="nsew", padx=(24, 0))
 
         # ===== FULL-WIDTH HEADER =====
         self._create_header(content_frame)
