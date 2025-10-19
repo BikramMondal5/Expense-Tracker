@@ -89,7 +89,7 @@ class UserDashboard:
             bg_color = self.WHITE
         
         shadow_frame = tk.Frame(parent, bg="#DDDDDD")
-        card_frame = tk.Frame(shadow_frame, bg=bg_color, padx=16, pady=16)
+        card_frame = tk.Frame(shadow_frame, bg=bg_color, padx=10, pady=10) # Reduced internal padding
         card_frame.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
         
         return shadow_frame, card_frame
@@ -147,7 +147,7 @@ class UserDashboard:
         
         # ===== TWO-COLUMN LAYOUT =====
         columns_frame = tk.Frame(scrollable_frame, bg=self.BG_LIGHT)
-        columns_frame.pack(fill=tk.BOTH, expand=True, padx=24, pady=12)
+        columns_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=6) # Reduced padding to decrease card area size
         
         # Configure columns: 60% left, 40% right
         columns_frame.grid_columnconfigure(0, weight=60, minsize=400)
@@ -191,29 +191,41 @@ class UserDashboard:
         header.pack_propagate(False)
         
         # Left: App title with icon
-        left_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
-        left_frame.pack(side=tk.LEFT, padx=24, pady=12)
+        # Removed left_frame and its content to allow for centering of title
+        # left_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
+        # left_frame.pack(side=tk.LEFT, padx=24, pady=12)
         
+        # tk.Label(
+        #     left_frame,
+        #     text="💰 Personal Expense Tracker",
+        #     font=self.FONT_XL,
+        #     bg=self.PRIMARY_COLOR,
+        #     fg=self.WHITE
+        # ).pack(side=tk.LEFT)
+        
+        # Center: App title and Current date
+        center_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
+        center_frame.pack(side=tk.LEFT, expand=True)
+        
+        # App Title
         tk.Label(
-            left_frame,
+            center_frame,
             text="💰 Personal Expense Tracker",
             font=self.FONT_XL,
             bg=self.PRIMARY_COLOR,
             fg=self.WHITE
-        ).pack(side=tk.LEFT)
+        ).pack(pady=(0, 5), padx=(300,0)) # Increased left padding to shift more right
         
-        # Center: Current date
-        center_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
-        center_frame.pack(side=tk.LEFT, expand=True)
-        
-        current_date = datetime.now().strftime("%B %d, %Y")
-        tk.Label(
-            center_frame,
-            text=current_date,
-            font=self.FONT_BODY,
-            bg=self.PRIMARY_COLOR,
-            fg=self.WHITE
-        ).pack()
+        # Current date
+        # Removed current date label
+        # current_date = datetime.now().strftime("%B %d, %Y")
+        # tk.Label(
+        #     center_frame,
+        #     text=current_date,
+        #     font=self.FONT_BODY,
+        #     bg=self.PRIMARY_COLOR,
+        #     fg=self.WHITE
+        # ).pack()
         
         # Right: Notification & User avatar
         right_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
@@ -842,7 +854,7 @@ class UserDashboard:
         tk.Label(
             header_frame,
             text="Recent Transactions",
-            font=self.FONT_HEADER,
+            font=self.FONT_HEADER, # Already FONT_HEADER, keep as is for consistent header sizing
             bg=self.WHITE,
             fg=self.TEXT_DARK
         ).pack(side=tk.LEFT)
@@ -860,12 +872,12 @@ class UserDashboard:
         search_frame = tk.Frame(card_frame, bg="#F7F8FA", bd=0)
         search_frame.pack(fill=tk.X, pady=(0, 12))
         
-        search_icon = tk.Label(search_frame, text="🔍", font=self.FONT_MD, bg="#F7F8FA")
+        search_icon = tk.Label(search_frame, text="🔍", font=self.FONT_MD, bg="#F7F8FA") # Keep FONT_MD for icon
         search_icon.pack(side=tk.LEFT, padx=8)
         
         self.search_entry = tk.Entry(
             search_frame,
-            font=self.FONT_BODY,
+            font=self.FONT_MD, # Increased font size
             bg="#F7F8FA",
             fg=self.TEXT_DARK,
             bd=0,
@@ -898,13 +910,14 @@ class UserDashboard:
         style.configure("Transactions.Treeview", 
                        background=self.WHITE,
                        foreground=self.TEXT_DARK,
-                       rowheight=40,
+                       rowheight=30, # Reduced row height for better compactness
                        fieldbackground=self.WHITE,
-                       borderwidth=0)
+                       borderwidth=0,
+                       font=self.FONT_BODY) # Reverted font size for rows
         style.configure("Transactions.Treeview.Heading",
                        background=self.BG_LIGHT,
                        foreground=self.TEXT_DARK,
-                       font=self.FONT_SUBHEADER)
+                       font=self.FONT_SUBHEADER) # Reverted font size for headings
         
         columns = ("Date", "Category", "Amount")
         self.transactions_tree = ttk.Treeview(
@@ -912,7 +925,7 @@ class UserDashboard:
             columns=columns,
             show="headings",
             style="Transactions.Treeview",
-            height=6
+            height=6 # Reduced height of the card back to original
         )
         
         for col in columns:
@@ -954,7 +967,7 @@ class UserDashboard:
         view_all = tk.Label(
             card_frame,
             text="View All Transactions →",
-            font=self.FONT_BODY,
+            font=self.FONT_BODY, # Reverted font size
             bg=self.WHITE,
             fg=self.PRIMARY_COLOR,
             cursor="hand2"
