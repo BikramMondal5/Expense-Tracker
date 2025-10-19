@@ -102,26 +102,30 @@ class UserDashboard:
         main_container = tk.Frame(self.root, bg=self.BG_LIGHT)
         main_container.pack(fill=tk.BOTH, expand=True)
         
-        # Configure grid for main_container: sidebar (column 0) and content (column 1)
+        # Configure grid for main_container: header (row 0), sidebar (row 1, column 0) and content (row 1, column 1)
+        main_container.grid_rowconfigure(0, weight=0) # Header will have fixed height
+        main_container.grid_rowconfigure(1, weight=1) # Content and sidebar will expand
         main_container.grid_columnconfigure(0, weight=0) # Sidebar will have fixed width
         main_container.grid_columnconfigure(1, weight=1) # Content will expand
-        main_container.grid_rowconfigure(0, weight=1)
+        
+        # ===== FULL-WIDTH HEADER =====
+        header_frame = tk.Frame(main_container, bg=self.PRIMARY_COLOR)
+        header_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self._create_header(header_frame)
 
         # ===== LEFT SIDEBAR =====
         self._create_sidebar(main_container)
 
         # ===== CONTENT FRAME =====
         content_frame = tk.Frame(main_container, bg=self.BG_LIGHT)
-        content_frame.grid(row=0, column=1, sticky="nsew", padx=(24, 0))
+        content_frame.grid(row=1, column=1, sticky="nsew", padx=(57, 0))
 
-        # ===== FULL-WIDTH HEADER =====
-        self._create_header(content_frame)
         
         # ===== SCROLLABLE CONTENT AREA =====
         content_canvas = tk.Canvas(content_frame, bg=self.BG_LIGHT, highlightthickness=0)
         content_scrollbar = ttk.Scrollbar(content_frame, orient="vertical", command=content_canvas.yview)
         scrollable_frame = tk.Frame(content_canvas, bg=self.BG_LIGHT)
-
+        
         scrollable_frame.bind(
             "<Configure>",
             lambda e: content_canvas.configure(scrollregion=content_canvas.bbox("all"))
@@ -537,7 +541,7 @@ class UserDashboard:
         carousel_container.pack(fill=tk.X)
         
         canvas = tk.Canvas(carousel_container, bg=self.BG_LIGHT, height=140, highlightthickness=0)
-        scrollbar = ttk.Scrollbar(carousel_container, orient="horizontal", command=canvas.xview)
+        # scrollbar = ttk.Scrollbar(carousel_container, orient="horizontal", command=canvas.xview)
         scrollable_frame = tk.Frame(canvas, bg=self.BG_LIGHT)
         
         scrollable_frame.bind(
@@ -546,10 +550,10 @@ class UserDashboard:
         )
         
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(xscrollcommand=scrollbar.set)
+        canvas.configure(xscrollcommand=None) # Remove horizontal scrollbar
         
         canvas.pack(side=tk.TOP, fill=tk.X, expand=True)
-        scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+        # scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
         
         currency = self.auth_manager.get_current_user_data().get('currency_symbol', '₹')
         cash_balance = self.auth_manager.get_current_user_data().get('cash_balance', 0.0)
@@ -930,9 +934,9 @@ class UserDashboard:
         self.transactions_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
         # Scrollbar
-        scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=self.transactions_tree.yview)
-        self.transactions_tree.configure(yscrollcommand=scrollbar.set)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        # scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=self.transactions_tree.yview)
+        # self.transactions_tree.configure(yscrollcommand=scrollbar.set)
+        # scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
         # View all link
         view_all = tk.Label(
@@ -1064,48 +1068,65 @@ class UserDashboard:
             btn_card.bind("<Enter>", lambda e, bc=btn_card: bc.config(bg="#F0F0F0"))
             btn_card.bind("<Leave>", lambda e, bc=btn_card: bc.config(bg=self.WHITE))
         
-        # Main FAB button
-        fab_button = tk.Label(
+        # Main FAB button - now a circular canvas
+        fab_canvas_size = 60 # Diameter of the circle
+        self.fab_button_canvas = tk.Canvas(
             fab_container,
+            width=fab_canvas_size,
+            height=fab_canvas_size,
+            bg=self.BG_LIGHT, # Background of the canvas itself, outside the circle
+            highlightthickness=0,
+            cursor="hand2"
+        )
+        self.fab_button_canvas.pack()
+
+        # Draw the circle
+        radius = fab_canvas_size / 2
+        center_x = fab_canvas_size / 2
+        center_y = fab_canvas_size / 2
+        self.fab_circle_item = self.fab_button_canvas.create_oval(
+            center_x - radius, center_y - radius,
+            center_x + radius, center_y + radius,
+            fill=self.ACCENT_COLOR,
+            outline="",
+            width=0
+        )
+
+        # Add the plus text
+        self.fab_text_item = self.fab_button_canvas.create_text(
+            center_x, center_y,
             text="➕",
             font=self.FONT_KPI,
-            bg=self.ACCENT_COLOR,
-            fg=self.WHITE,
-            width=2,
-            height=1,
-            cursor="hand2",
-            bd=0,
-            relief=tk.FLAT
+            fill=self.WHITE
         )
-        fab_button.pack()
         
         def toggle_fab_menu(e=None):
             if self.fab_menu_visible:
                 self.fab_sub_frame.pack_forget()
-                fab_button.config(text="➕")
+                self.fab_button_canvas.itemconfig(self.fab_text_item, text="➕") # Update text on canvas
                 self.fab_menu_visible = False
             else:
                 self.fab_sub_frame.pack(side=tk.TOP, pady=(0, 8))
-                fab_button.config(text="✕")
+                self.fab_button_canvas.itemconfig(self.fab_text_item, text="✕") # Update text on canvas
                 self.fab_menu_visible = True
         
-        fab_button.bind("<Button-1>", toggle_fab_menu)
+        self.fab_button_canvas.bind("<Button-1>", toggle_fab_menu)
         
         # Hover effect
         def on_fab_enter(e):
-            fab_button.config(bg=self.SECONDARY_COLOR)
+            self.fab_button_canvas.itemconfig(self.fab_circle_item, fill=self.SECONDARY_COLOR)
         
         def on_fab_leave(e):
-            fab_button.config(bg=self.ACCENT_COLOR)
+            self.fab_button_canvas.itemconfig(self.fab_circle_item, fill=self.ACCENT_COLOR)
         
-        fab_button.bind("<Enter>", on_fab_enter)
-        fab_button.bind("<Leave>", on_fab_leave)
+        self.fab_button_canvas.bind("<Enter>", on_fab_enter)
+        self.fab_button_canvas.bind("<Leave>", on_fab_leave)
 
     def _create_sidebar(self, parent):
         """Create the left sidebar with profile, navigation, and settings"""
-        sidebar_width = 280
+        sidebar_width = 300
         sidebar_frame = tk.Frame(parent, bg=self.WHITE, width=sidebar_width)
-        sidebar_frame.grid(row=0, column=0, sticky="nsew")
+        sidebar_frame.grid(row=1, column=0, sticky="nsew")
         sidebar_frame.pack_propagate(False) # Prevent frame from resizing to content
 
         # Scrollable area for sidebar content
@@ -1143,24 +1164,28 @@ class UserDashboard:
         profile_frame = tk.Frame(scrollable_sidebar_frame, bg=self.PRIMARY_COLOR, padx=20, pady=20)
         profile_frame.pack(fill=tk.X)
 
+        # Frame to hold icon and name on the same row
+        name_row_frame = tk.Frame(profile_frame, bg=self.PRIMARY_COLOR)
+        name_row_frame.pack(fill=tk.X, anchor="w")
+
         profile_icon = tk.Label(
-            profile_frame,
+            name_row_frame,
             text="👤",
             font=self.FONT_3XL,
             bg=self.PRIMARY_COLOR,
             fg=self.WHITE
         )
-        profile_icon.pack(anchor="w")
+        profile_icon.pack(side=tk.LEFT, anchor="w")
 
         user_name = self.auth_manager.get_current_user_data().get('name', 'User')
         profile_name = tk.Label(
-            profile_frame,
+            name_row_frame,
             text=user_name.capitalize(),
             font=self.FONT_XXL,
             bg=self.PRIMARY_COLOR,
             fg=self.WHITE
         )
-        profile_name.pack(anchor="w", pady=(10, 0))
+        profile_name.pack(side=tk.LEFT, anchor="w", padx=(10, 0))
 
         tk.Label(
             profile_frame,
@@ -1168,27 +1193,27 @@ class UserDashboard:
             font=self.FONT_BODY,
             bg=self.PRIMARY_COLOR,
             fg="#d8e0f0"
-        ).pack(anchor="w")
+        ).pack(anchor="w", pady=(5,0))
 
         # Navigation Links
         nav_frame = tk.Frame(scrollable_sidebar_frame, bg=self.WHITE, padx=10, pady=10)
         nav_frame.pack(fill=tk.BOTH, expand=True)
 
-        nav_items_top = [
-            ("⬆️", "Get Premium"),
-            ("🏦", "Bank Sync"),
-            ("⬇️", "Imports"),
-        ]
-        self._create_nav_section(nav_frame, nav_items_top, section_title=None)
+        # Removed top 3 nav items: Get Premium, Bank Sync, Imports
+        # nav_items_top = [
+        #     ("⬆️", "Get Premium"),
+        #     ("🏦", "Bank Sync"),
+        #     ("⬇️", "Imports"),
+        # ]
+        # self._create_nav_section(nav_frame, nav_items_top, section_title=None)
 
-        tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
+        # tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
 
         nav_items_main = [
             ("🏠", "Home"),
             ("📋", "Records"),
             ("📈", "Investments", "New"),
             ("📊", "Statistics", "New"),
-            ("🗓️", "Planned payments"),
             ("💰", "Budgets"),
             ("📉", "Debts"),
             ("🎯", "Goals"),
@@ -1200,7 +1225,6 @@ class UserDashboard:
 
         nav_items_more = [
             ("🛒", "Shopping lists"),
-            ("🛡️", "Warranties"),
             ("💳", "Loyalty cards"),
             ("💱", "Currency rates"),
             ("👥", "Group sharing"),
