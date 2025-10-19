@@ -23,9 +23,9 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
 
     # Main container with light blue background
     main_frame = tk.Frame(modal, bg="#00BFFF")
-    main_frame.pack(fill=tk.BOTH, expand=True, pady=(20, 20))
-    main_frame.grid_rowconfigure(0, weight=1)
-    main_frame.grid_rowconfigure(1, weight=1)
+    main_frame.pack(fill=tk.BOTH, expand=True)
+    main_frame.grid_rowconfigure(0, weight=6)
+    main_frame.grid_rowconfigure(1, weight=4)
     main_frame.grid_columnconfigure(0, weight=1)
 
     # Blue section frame to hold all top elements
@@ -194,7 +194,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
 
     # Numeric Keypad Section
     keypad_container = tk.Frame(main_frame, bg="lightgray")
-    keypad_container.grid(row=1, column=0, sticky="nsew", pady=(0, 20))
+    keypad_container.grid(row=1, column=0, sticky="nsew")
 
     # Keypad frame with light gray background
     keypad_frame = tk.Frame(keypad_container, bg="#F0F0F0")
