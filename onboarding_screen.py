@@ -14,7 +14,7 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
 
     # Center content container
     center_frame = tk.Frame(main_frame, bg="#FFFFFF")
-    center_frame.place(relx=0.5, rely=0.5, anchor="center", width=500, height=760)
+    center_frame.place(relx=0.5, rely=0.5, anchor="center", width=500)
 
 
 
@@ -188,12 +188,13 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
             currency_symbol = currency.split('(')[1].split(')')[0]
             currency_code = currency.split(' - ')[0]
 
-            config.save_user_settings(auth_manager.get_current_user(), monthly_budget, currency_symbol, currency_code)
+            success, message = auth_manager.onboard_user(budget, currency_var.get())
             
-            messagebox.showinfo("Setup Complete", "Your settings have been saved successfully!")
-            
-            # This will destroy the onboarding screen and show the main application
-            app_instance.show_main_app()
+            if success:
+                messagebox.showinfo("Setup Complete", message)
+                app_instance.show_dashboard()
+            else:
+                messagebox.showerror("Error", message)
 
         except ValueError:
             messagebox.showerror("Invalid Input", "Please enter a valid number for the budget.")
