@@ -7,6 +7,7 @@ import config
 from tkinter import messagebox
 from datetime import datetime, timedelta
 import math
+import add_expenses # Import the new module
 
 class UserDashboard:
     def __init__(self, root, auth_manager, app_instance):
@@ -75,13 +76,13 @@ class UserDashboard:
             widget.destroy()
 
     def show_add_transaction_modal(self):
-        messagebox.showinfo("Add Transaction", "Add new transaction functionality coming soon!")
+        add_expenses.display_add_expense_screen(self.root, self.auth_manager, self)
 
     def show_add_income_modal(self):
-        messagebox.showinfo("Add Income", "Add new income functionality coming soon!")
+        add_income.display_add_income_screen(self.root, self.auth_manager, self)
 
     def show_add_budget_modal(self):
-        messagebox.showinfo("Add Budget", "Add new budget functionality coming soon!")
+        add_budget.display_add_budget_screen(self.root, self.auth_manager, self)
     
     def _create_shadow_card(self, parent, bg_color=None):
         """Create a card frame with shadow effect"""
@@ -194,7 +195,7 @@ class UserDashboard:
         # Left: Project Logo
         left_logo_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
         left_logo_frame.pack(side=tk.LEFT, padx=24, pady=12) # Proper left padding
-
+        
         tk.Label(
             left_logo_frame,
             text="📈", # Placeholder for logo
@@ -1070,48 +1071,9 @@ class UserDashboard:
     
     def _create_fab(self, parent):
         """Create the floating action button group"""
-        self.fab_menu_visible = False
-        
         # Container for FAB and sub-buttons
         fab_container = tk.Frame(parent, bg=self.BG_LIGHT)
         fab_container.place(relx=0.98, rely=0.98, anchor=tk.SE)
-        
-        # Sub-buttons frame (initially hidden)
-        self.fab_sub_frame = tk.Frame(fab_container, bg=self.BG_LIGHT)
-        
-        # Sub-buttons
-        sub_buttons = [
-            ("💸", "Add Expense", self.ERROR, self.show_add_transaction_modal),
-            ("💰", "Add Income", self.SUCCESS, self.show_add_income_modal),
-            ("🎯", "Add Budget", self.PRIMARY_COLOR, self.show_add_budget_modal),
-        ]
-        
-        for icon, text, color, command in reversed(sub_buttons):
-            btn_shadow, btn_card = self._create_shadow_card(self.fab_sub_frame, self.WHITE)
-            btn_shadow.pack(pady=4)
-            
-            btn_content = tk.Frame(btn_card, bg=self.WHITE)
-            btn_content.pack(fill=tk.BOTH, expand=True)
-            
-            tk.Label(
-                btn_content,
-                text=icon,
-                font=self.FONT_XXL,
-                bg=self.WHITE,
-                fg=color
-            ).pack(side=tk.LEFT, padx=8)
-            
-            tk.Label(
-                btn_content,
-                text=text,
-                font=self.FONT_BODY,
-                bg=self.WHITE,
-                fg=self.TEXT_DARK
-            ).pack(side=tk.LEFT, padx=8)
-            
-            btn_card.bind("<Button-1>", lambda e, cmd=command: cmd())
-            btn_card.bind("<Enter>", lambda e, bc=btn_card: bc.config(bg="#F0F0F0"))
-            btn_card.bind("<Leave>", lambda e, bc=btn_card: bc.config(bg=self.WHITE))
         
         # Main FAB button - now a circular canvas
         fab_canvas_size = 60 # Diameter of the circle
@@ -1145,17 +1107,7 @@ class UserDashboard:
             fill=self.WHITE
         )
         
-        def toggle_fab_menu(e=None):
-            if self.fab_menu_visible:
-                self.fab_sub_frame.pack_forget()
-                self.fab_button_canvas.itemconfig(self.fab_text_item, text="➕") # Update text on canvas
-                self.fab_menu_visible = False
-            else:
-                self.fab_sub_frame.pack(side=tk.TOP, pady=(0, 8))
-                self.fab_button_canvas.itemconfig(self.fab_text_item, text="✕") # Update text on canvas
-                self.fab_menu_visible = True
-        
-        self.fab_button_canvas.bind("<Button-1>", toggle_fab_menu)
+        self.fab_button_canvas.bind("<Button-1>", lambda e: self.show_add_transaction_modal())
         
         # Hover effect
         def on_fab_enter(e):

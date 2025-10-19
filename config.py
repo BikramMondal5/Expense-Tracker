@@ -13,3 +13,4 @@ USERS_FILE = "users.json"
 # Font preferences
 FONT_PRIMARY = "Segoe UI" # Fallback to system default, prefer "Poppins" or "Inter"
 FONT_BOLD = "Segoe UI Bold"
+FONT_3XL = (FONT_PRIMARY, 24, "bold")

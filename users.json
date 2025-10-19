@@ -10,6 +10,57 @@
         "created_at": "2025-10-19T11:35:22.851655",
         "monthly_budget": 3000.0,
         "currency": "INR",
-        "cash_balance": 0.0
+        "cash_balance": 0.0,
+        "expenses": [
+            {
+                "amount": 593571.0,
+                "category": "SHOPPING",
+                "account": "CREDIT CARD",
+                "date": "2025-10-19",
+                "timestamp": "2025-10-19 17:59:12"
+            },
+            {
+                "amount": 62.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 02:08:48"
+            },
+            {
+                "amount": 5896.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 02:21:12"
+            },
+            {
+                "amount": 3256.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 02:36:31"
+            },
+            {
+                "amount": 6520.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 02:58:54"
+            },
+            {
+                "amount": 789520.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 03:10:02"
+            },
+            {
+                "amount": 8520.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 03:13:24"
+            }
+        ]
     }
 }
