@@ -8,7 +8,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     # Create a modal window (Toplevel)
     modal = tk.Toplevel(root)
     modal.title("Add Expense")
-    modal.geometry("600x700")
+    modal.geometry("450x600")
     modal.resizable(False, False)
     
     # Make it modal
@@ -17,23 +17,30 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     
     # Center the modal on screen
     modal.update_idletasks()
-    x = (modal.winfo_screenwidth() // 2) - (600 // 2)
-    y = (modal.winfo_screenheight() // 2) - (700 // 2)
-    modal.geometry(f"600x700+{x}+{y}")
+    x = (modal.winfo_screenwidth() // 2) - (450 // 2)
+    y = (modal.winfo_screenheight() // 2) - (600 // 2)
+    modal.geometry(f"450x600+{x}+{y}")
 
     # Main container with light blue background
     main_frame = tk.Frame(modal, bg="#00BFFF")
-    main_frame.pack(fill=tk.BOTH, expand=True)
+    main_frame.pack(fill=tk.BOTH, expand=True, pady=(20, 20))
+    main_frame.grid_rowconfigure(0, weight=1)
+    main_frame.grid_rowconfigure(1, weight=1)
+    main_frame.grid_columnconfigure(0, weight=1)
+
+    # Blue section frame to hold all top elements
+    blue_section_frame = tk.Frame(main_frame, bg="#00BFFF")
+    blue_section_frame.grid(row=0, column=0, sticky="nsew")
 
     # Top section with amount display
-    top_section = tk.Frame(main_frame, bg="#00BFFF")
-    top_section.pack(fill=tk.X, pady=(20, 0))
+    top_section = tk.Frame(blue_section_frame, bg="#00BFFF")
+    top_section.pack(fill=tk.X)
 
     # Back button
     back_btn = tk.Label(
         top_section,
         text="✕",
-        font=("Segoe UI", 24, "bold"),
+        font=("Segoe UI", 20, "bold"),
         bg="#00BFFF",
         fg="white",
         cursor="hand2"
@@ -41,14 +48,14 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     back_btn.pack(anchor="w", padx=20, pady=10)
     back_btn.bind("<Button-1>", lambda e: modal.destroy())
 
-    # Amount display area - Centered
-    amount_display_frame = tk.Frame(main_frame, bg="#00BFFF")
-    amount_display_frame.pack(fill=tk.X, pady=(40, 20))
+    # Amount display frame
+    amount_display_frame = tk.Frame(blue_section_frame, bg="#00BFFF")
+    amount_display_frame.pack(fill=tk.X)
 
     amount_value_label = tk.Label(
         amount_display_frame,
         text="0",
-        font=("Segoe UI", 72, "bold"),
+        font=("Segoe UI", 60, "bold"),
         bg="#00BFFF",
         fg="white"
     )
@@ -61,15 +68,15 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     amount_currency_label = tk.Label(
         amount_display_frame,
         text=currency_code,
-        font=("Segoe UI", 28, "bold"),
+        font=("Segoe UI", 24, "bold"),
         bg="#00BFFF",
         fg="white"
     )
     amount_currency_label.pack(side=tk.LEFT, padx=(10, 0))
 
     # Account and Category selection section
-    selection_frame = tk.Frame(main_frame, bg="#00BFFF")
-    selection_frame.pack(fill=tk.X, pady=(20, 10))
+    selection_frame = tk.Frame(blue_section_frame, bg="#00BFFF")
+    selection_frame.pack(fill=tk.X)
 
     # Account selector
     account_frame = tk.Frame(selection_frame, bg="#00BFFF")
@@ -78,7 +85,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     account_label = tk.Label(
         account_frame,
         text="Account",
-        font=("Segoe UI", 12),
+        font=("Segoe UI", 10),
         bg="#00BFFF",
         fg="white"
     )
@@ -90,7 +97,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     account_display = tk.Label(
         account_frame,
         text=account_var.get(),
-        font=("Segoe UI", 16, "bold"),
+        font=("Segoe UI", 14, "bold"),
         bg="#00BFFF",
         fg="white",
         cursor="hand2"
@@ -104,7 +111,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     category_label = tk.Label(
         category_frame,
         text="Category",
-        font=("Segoe UI", 12),
+        font=("Segoe UI", 10),
         bg="#00BFFF",
         fg="white"
     )
@@ -116,7 +123,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     category_display = tk.Label(
         category_frame,
         text=category_var.get(),
-        font=("Segoe UI", 16, "bold"),
+        font=("Segoe UI", 14, "bold"),
         bg="#00BFFF",
         fg="white",
         cursor="hand2"
@@ -125,7 +132,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
 
     # Simple dropdown functionality for account
     def show_account_menu(event):
-        menu = tk.Menu(modal, tearoff=0, font=("Segoe UI", 12))
+        menu = tk.Menu(modal, tearoff=0, font=("Segoe UI", 10))
         for option in account_options:
             menu.add_command(
                 label=option,
@@ -135,7 +142,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
 
     # Simple dropdown functionality for category
     def show_category_menu(event):
-        menu = tk.Menu(modal, tearoff=0, font=("Segoe UI", 12))
+        menu = tk.Menu(modal, tearoff=0, font=("Segoe UI", 10))
         for option in category_options:
             menu.add_command(
                 label=option,
@@ -146,20 +153,24 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     account_display.bind("<Button-1>", show_account_menu)
     category_display.bind("<Button-1>", show_category_menu)
 
+    def open_templates_modal():
+        pass
+
     # Templates button
     templates_btn = tk.Button(
-        main_frame,
+        blue_section_frame,
         text="TEMPLATES",
-        font=("Segoe UI", 12, "bold"),
+        font=("Segoe UI", 10, "bold"),
         bg="#00BFFF",
         fg="white",
         relief=tk.FLAT,
         bd=0,
         cursor="hand2",
         activebackground="#00BFFF",
-        activeforeground="white"
+        activeforeground="white",
+        command=open_templates_modal
     )
-    templates_btn.pack(pady=(10, 20))
+    templates_btn.pack()
 
     # Function to update the amount display
     def update_amount_display(value):
@@ -182,8 +193,8 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
             amount_value_label.config(text="0")
 
     # Numeric Keypad Section
-    keypad_container = tk.Frame(main_frame, bg="white")
-    keypad_container.pack(fill=tk.BOTH, expand=True)
+    keypad_container = tk.Frame(main_frame, bg="lightgray")
+    keypad_container.grid(row=1, column=0, sticky="nsew", pady=(0, 20))
 
     # Keypad frame with light gray background
     keypad_frame = tk.Frame(keypad_container, bg="#F0F0F0")
@@ -260,7 +271,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
             equal_button = tk.Button(
                 keypad_frame,
                 text="=",
-                font=("Segoe UI", 28, "bold"),
+                font=("Segoe UI", 24, "bold"),
                 bg="#D3D3D3",
                 fg="#333333",
                 activebackground="#C0C0C0",
@@ -291,7 +302,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
                 key_button = tk.Button(
                     keypad_frame,
                     text=key,
-                    font=("Segoe UI", 28, "bold") if key in ["÷", "×", "-", "+"] else ("Segoe UI", 32),
+                    font=("Segoe UI", 20, "bold") if key in ["÷", "×", "-", "+"] else ("Segoe UI", 24),
                     bg=bg_color,
                     fg=fg_color,
                     activebackground="#D0D0D0",

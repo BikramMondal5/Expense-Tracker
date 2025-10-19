@@ -18,6 +18,27 @@
                 "account": "CREDIT CARD",
                 "date": "2025-10-19",
                 "timestamp": "2025-10-19 17:59:12"
+            },
+            {
+                "amount": 62.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 02:08:48"
+            },
+            {
+                "amount": 5896.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 02:21:12"
+            },
+            {
+                "amount": 3256.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 02:36:31"
             }
         ]
     }
