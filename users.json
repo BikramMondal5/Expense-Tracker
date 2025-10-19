@@ -39,6 +39,13 @@
                 "account": "CASH",
                 "date": "2025-10-20",
                 "timestamp": "2025-10-20 02:36:31"
+            },
+            {
+                "amount": 6520.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 02:58:54"
             }
         ]
     }

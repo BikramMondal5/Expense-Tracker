@@ -208,6 +208,13 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         ["=", "=", "=", "="]  # Equal button spans full width
     ]
 
+    # Function to handle key presses
+    def on_key_press(key):
+        if key == "⌫":
+            delete_last_char()
+        elif key in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "÷", "×", "-", "+"]:
+            update_amount_display(key)
+
     # Function to simulate button press visual feedback
     # def on_key_enter(e):
     #     if e.widget.cget("text") in ["÷", "×", "-", "+"]:
@@ -225,20 +232,6 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     #     else:
     #         e.widget['background'] = "#E0E0E0"
 
-    # Function to handle key presses
-    def on_key_press(key):
-        if key in ["÷", "×", "-", "+"]:
-            e.widget['background'] = "#D0D0D0"
-        else:
-            e.widget['background'] = "#E0E0E0"
-
-    def on_key_leave(e):
-        if e.widget.cget("text") in ["÷", "×", "-", "+"]:
-            e.widget['background'] = "#E8E8E8"
-        elif e.widget.cget("text") == "=":
-            e.widget['background'] = "#D3D3D3"
-        else:
-            e.widget['background'] = "#F0F0F0"
 
     def process_expense():
         try:
