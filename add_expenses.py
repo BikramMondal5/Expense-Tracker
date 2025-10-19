@@ -208,8 +208,26 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         ["=", "=", "=", "="]  # Equal button spans full width
     ]
 
-    def on_key_enter(e):
-        if e.widget.cget("text") in ["÷", "×", "-", "+"]:
+    # Function to simulate button press visual feedback
+    # def on_key_enter(e):
+    #     if e.widget.cget("text") in ["÷", "×", "-", "+"]:
+    #         e.widget['background'] = "#D0D0D0"
+    #     else:
+    #         e.widget['background'] = "#E0E0E0"
+
+    # def on_key_leave(e):
+    #     if e.widget.cget("text") in ["÷", "×", "-", "+"]:
+    #         e.widget['background'] = "#3591e2" # Blue for operators
+    #     elif e.widget.cget("text") == "⌫":
+    #         e.widget['background'] = "#FF6B6B"  # Light red for backspace
+    #     elif e.widget.cget("text") == ".":
+    #         e.widget['background'] = "#C0C0C0"
+    #     else:
+    #         e.widget['background'] = "#E0E0E0"
+
+    # Function to handle key presses
+    def on_key_press(key):
+        if key in ["÷", "×", "-", "+"]:
             e.widget['background'] = "#D0D0D0"
         else:
             e.widget['background'] = "#E0E0E0"
@@ -222,7 +240,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         else:
             e.widget['background'] = "#F0F0F0"
 
-    def save_expense():
+    def process_expense():
         try:
             amount = float(amount_value_label.cget("text"))
             if amount <= 0:
@@ -270,34 +288,35 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
             keypad_frame.grid_columnconfigure(0, weight=1)
             equal_button = tk.Button(
                 keypad_frame,
-                text="=",
+                text="Submit",
                 font=("Segoe UI", 24, "bold"),
-                bg="#D3D3D3",
-                fg="#333333",
-                activebackground="#C0C0C0",
-                activeforeground="#333333",
+                bg="#5C6BC0",
+                fg="white",
+                activebackground="#4A5B9C",
+                activeforeground="white",
                 relief=tk.FLAT,
                 bd=0,
                 cursor="hand2",
-                command=save_expense
+                command=lambda: process_expense()
             )
-            equal_button.grid(row=r_idx, column=0, columnspan=4, sticky="nsew", padx=2, pady=2)
-            equal_button.bind("<Enter>", lambda e: e.widget.config(bg="#C0C0C0"))
-            equal_button.bind("<Leave>", on_key_leave)
+            equal_button.grid(row=r_idx, column=0, columnspan=4, sticky="nsew", padx=1, pady=1)
         else:
             for c_idx, key in enumerate(row):
                 keypad_frame.grid_columnconfigure(c_idx, weight=1)
 
                 # Determine button color based on key type
                 if key in ["÷", "×", "-", "+"]:
-                    bg_color = "#E8E8E8"
-                    fg_color = "#333333"
+                    bg_color = "#3591e2"  # Blue for operators
+                    fg_color = "white"     # White text for operators
                 elif key == "⌫":
-                    bg_color = "#F0F0F0"
+                    bg_color = "#FF6B6B"  # Light red for backspace
+                    fg_color = "white"
+                elif key == ".":
+                    bg_color = "#C0C0C0"
                     fg_color = "#333333"
                 else:
-                    bg_color = "#F0F0F0"
-                    fg_color = "#555555"
+                    bg_color = "#E0E0E0"
+                    fg_color = "#333333"
 
                 key_button = tk.Button(
                     keypad_frame,
@@ -305,16 +324,14 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
                     font=("Segoe UI", 20, "bold") if key in ["÷", "×", "-", "+"] else ("Segoe UI", 24),
                     bg=bg_color,
                     fg=fg_color,
-                    activebackground="#D0D0D0",
-                    activeforeground="#333333",
+                    activebackground="#2c79c1" if key in ["÷", "×", "-", "+"] else ("#C0C0C0" if key == "." else "#D0D0D0"),
+                    activeforeground="white" if key in ["÷", "×", "-", "+", "⌫"] else "#333333",
                     relief=tk.FLAT,
                     bd=0,
                     cursor="hand2",
-                    command=lambda k=key: update_amount_display(k) if k not in ["⌫", "÷", "×", "-", "+"] else (delete_last_char() if k == "⌫" else None)
+                    command=lambda k=key: on_key_press(k)
                 )
-                key_button.grid(row=r_idx, column=c_idx, sticky="nsew", padx=2, pady=2)
-                key_button.bind("<Enter>", on_key_enter)
-                key_button.bind("<Leave>", on_key_leave)
+                key_button.grid(row=r_idx, column=c_idx, sticky="nsew", padx=1, pady=1)
 
 def display_onboarding_screen(root, auth_manager, app_instance, primary_color, secondary_color, accent_color, bg_light, text_dark, text_light, white, success, error):
     """Displays the combined onboarding screen for monthly budget and currency."""
