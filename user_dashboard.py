@@ -190,18 +190,26 @@ class UserDashboard:
         header.pack(fill=tk.X)
         header.pack_propagate(False)
         
-        # Left: App title with icon
-        # Removed left_frame and its content to allow for centering of title
-        # left_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
-        # left_frame.pack(side=tk.LEFT, padx=24, pady=12)
+        # Left: Project Logo
+        left_logo_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
+        left_logo_frame.pack(side=tk.LEFT, padx=24, pady=12) # Proper left padding
+
+        tk.Label(
+            left_logo_frame,
+            text="📈", # Placeholder for logo
+            font=self.FONT_XXL,
+            bg=self.PRIMARY_COLOR,
+            fg=self.WHITE
+        ).pack(side=tk.LEFT)
         
-        # tk.Label(
-        #     left_frame,
-        #     text="💰 Personal Expense Tracker",
-        #     font=self.FONT_XL,
-        #     bg=self.PRIMARY_COLOR,
-        #     fg=self.WHITE
-        # ).pack(side=tk.LEFT)
+        # Project Name
+        tk.Label(
+            left_logo_frame,
+            text="WalletHub",
+            font=self.FONT_XL,
+            bg=self.PRIMARY_COLOR,
+            fg=self.WHITE
+        ).pack(side=tk.LEFT, padx=(5,0)) # Added left padding for spacing
         
         # Center: App title and Current date
         center_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
@@ -214,7 +222,7 @@ class UserDashboard:
             font=self.FONT_XL,
             bg=self.PRIMARY_COLOR,
             fg=self.WHITE
-        ).pack(pady=(0, 5), padx=(300,0)) # Increased left padding to shift more right
+        ).pack(pady=(0, 5)) # Removed explicit left padding to allow dynamic centering
         
         # Current date
         # Removed current date label
