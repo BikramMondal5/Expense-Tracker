@@ -17,8 +17,8 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     
     # Center the modal on screen
     modal.update_idletasks()
-    x = (modal.winfo_screenwidth() // 2) - (450 // 2)
-    y = (modal.winfo_screenheight() // 2) - (600 // 2)
+    x = modal.winfo_screenwidth() - 450 - 20  # 20px padding from right edge
+    y = modal.winfo_screenheight() - 600 - 170 # Increased padding from bottom
     modal.geometry(f"450x600+{x}+{y}")
 
     # Main container with light blue background
