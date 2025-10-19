@@ -37,7 +37,7 @@ class UserDashboard:
 
         # Fonts - Updated hierarchy
         self.FONT_CAPTION = (config.FONT_PRIMARY, 9)
-        self.FONT_BODY = (config.FONT_PRIMARY, 11)
+        self.FONT_BODY = (config.FONT_PRIMARY, 11, "bold") # Made font bold
         self.FONT_SM = (config.FONT_PRIMARY, 11)
         self.FONT_MD = (config.FONT_PRIMARY, 12)
         self.FONT_SUBHEADER = (config.FONT_PRIMARY, 12, "bold")
@@ -621,40 +621,51 @@ class UserDashboard:
     def _create_account_card(self, parent, account_type, icon, balance, trend, color1, color2):
         """Create an individual account card with gradient background"""
         # Note: Tkinter doesn't support gradients natively, so we'll use a solid color
-        card_frame = tk.Frame(parent, bg=color1, width=200, height=120, bd=0, relief=tk.FLAT)
+        card_frame = tk.Frame(parent, bg=color1, width=200, height=120, bd=0, relief=tk.FLAT) # Reverted height for better proportion
         card_frame.pack(side=tk.LEFT, padx=8)
         card_frame.pack_propagate(False)
         
         # Add padding frame
         content_frame = tk.Frame(card_frame, bg=color1)
-        content_frame.pack(fill=tk.BOTH, expand=True, padx=16, pady=12)
+        content_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5) # Consistent internal padding
+        
+        # Configure grid for content_frame
+        content_frame.grid_rowconfigure(0, weight=1) # Icon row
+        content_frame.grid_rowconfigure(1, weight=1) # Type row
+        content_frame.grid_rowconfigure(2, weight=1) # Balance row
+        content_frame.grid_rowconfigure(3, weight=1) # Trend row
+        content_frame.grid_columnconfigure(0, weight=1)
+
+        # Frame to hold icon and type on the same row
+        icon_and_type_frame = tk.Frame(content_frame, bg=color1)
+        icon_and_type_frame.grid(row=0, column=0, sticky="nw")
         
         # Icon
         tk.Label(
-            content_frame,
+            icon_and_type_frame,
             text=icon,
-            font=self.FONT_KPI,
+            font=self.FONT_XL,
             bg=color1,
             fg=self.WHITE
-        ).pack(anchor="nw")
+        ).pack(side=tk.LEFT, anchor="nw")
         
         # Type
         tk.Label(
-            content_frame,
+            icon_and_type_frame,
             text=account_type,
-            font=self.FONT_CAPTION,
+            font=self.FONT_BODY, # Increased font size and weight
             bg=color1,
             fg=self.WHITE
-        ).pack(anchor="nw", pady=(4, 8))
+        ).pack(side=tk.LEFT, anchor="center", padx=(5,0))
         
         # Balance
         tk.Label(
             content_frame,
             text=balance,
-            font=self.FONT_VALUE,
+            font=self.FONT_BODY,
             bg=color1,
             fg=self.WHITE
-        ).pack(anchor="w")
+        ).grid(row=1, column=0, sticky="w") # Shifted to row 1
         
         # Trend
         tk.Label(
@@ -663,7 +674,7 @@ class UserDashboard:
             font=self.FONT_CAPTION,
             bg=color1,
             fg=self.WHITE
-        ).pack(anchor="sw", side=tk.BOTTOM)
+        ).grid(row=2, column=0, sticky="sw") # Shifted to row 2
         
         # Hover effect
         def on_enter(e):
