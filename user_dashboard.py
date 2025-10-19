@@ -584,11 +584,11 @@ class UserDashboard:
         
         # Account cards
         self._create_account_card(scrollable_frame, "Cash", "💵", f"{currency}{cash_balance:.2f}", 
-                                   "▲ 5%", self.PRIMARY_COLOR, self.SECONDARY_COLOR)
+                                   "▲ 5%", self.PRIMARY_COLOR, self.SECONDARY_COLOR, vertical_offset=0)
         self._create_account_card(scrollable_frame, "Bank", "🏦", f"{currency}5,234.56", 
-                                   "▲ 2%", "#66BB6A", "#4CAF50")
+                                   "▲ 2%", "#66BB6A", "#4CAF50", vertical_offset=0)
         self._create_account_card(scrollable_frame, "Credit Card", "💳", f"{currency}2,150.00", 
-                                   "▼ 10%", "#FFA726", "#FF9800")
+                                   "▼ 10%", "#FFA726", "#FF9800", vertical_offset=6) # Increased downward shift further
         
         # Add Account button
         add_btn_frame = tk.Frame(scrollable_frame, bg=self.BG_LIGHT, 
@@ -618,7 +618,7 @@ class UserDashboard:
         add_btn_frame.bind("<Enter>", lambda e: add_btn_frame.config(bg="#F0F0F0"))
         add_btn_frame.bind("<Leave>", lambda e: add_btn_frame.config(bg=self.BG_LIGHT))
     
-    def _create_account_card(self, parent, account_type, icon, balance, trend, color1, color2):
+    def _create_account_card(self, parent, account_type, icon, balance, trend, color1, color2, vertical_offset=0):
         """Create an individual account card with gradient background"""
         # Note: Tkinter doesn't support gradients natively, so we'll use a solid color
         card_frame = tk.Frame(parent, bg=color1, width=200, height=120, bd=0, relief=tk.FLAT) # Reverted height for better proportion
@@ -656,7 +656,7 @@ class UserDashboard:
             font=self.FONT_BODY, # Increased font size and weight
             bg=color1,
             fg=self.WHITE
-        ).pack(side=tk.LEFT, anchor="center", padx=(5,0))
+        ).pack(side=tk.LEFT, anchor="center", padx=(5,0), pady=(vertical_offset,0)) # Apply conditional vertical offset
         
         # Balance
         tk.Label(
