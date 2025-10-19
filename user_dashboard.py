@@ -189,6 +189,7 @@ class UserDashboard:
         header = tk.Frame(parent, bg=self.PRIMARY_COLOR, height=60)
         header.pack(fill=tk.X)
         header.pack_propagate(False)
+        header.config(highlightbackground=self.BG_LIGHT, highlightthickness=1)
         
         # Left: Project Logo
         left_logo_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
@@ -205,7 +206,7 @@ class UserDashboard:
         # Project Name
         tk.Label(
             left_logo_frame,
-            text="WalletHub",
+            text="WalletWise",
             font=self.FONT_XL,
             bg=self.PRIMARY_COLOR,
             fg=self.WHITE
@@ -1169,7 +1170,7 @@ class UserDashboard:
     def _create_sidebar(self, parent):
         """Create the left sidebar with profile, navigation, and settings"""
         sidebar_width = 300
-        sidebar_frame = tk.Frame(parent, bg=self.WHITE, width=sidebar_width)
+        sidebar_frame = tk.Frame(parent, bg=self.WHITE, width=sidebar_width, highlightbackground=self.BG_LIGHT, highlightthickness=1)
         sidebar_frame.grid(row=1, column=0, sticky="nsew")
         sidebar_frame.pack_propagate(False) # Prevent frame from resizing to content
 
@@ -1251,30 +1252,15 @@ class UserDashboard:
         # ]
         # self._create_nav_section(nav_frame, nav_items_top, section_title=None)
 
-        # tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
+        tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
 
         nav_items_main = [
             ("🏠", "Home"),
             ("📋", "Records"),
-            ("📈", "Investments", "New"),
             ("📊", "Statistics", "New"),
             ("💰", "Budgets"),
-            ("📉", "Debts"),
-            ("🎯", "Goals"),
-            ("💼", "Wallet for your business", "New"),
         ]
         self._create_nav_section(nav_frame, nav_items_main, section_title=None)
-
-        tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
-
-        nav_items_more = [
-            ("🛒", "Shopping lists"),
-            ("💳", "Loyalty cards"),
-            ("💱", "Currency rates"),
-            ("👥", "Group sharing"),
-            ("•••", "Others"),
-        ]
-        self._create_nav_section(nav_frame, nav_items_more, section_title=None)
 
         tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
 
@@ -1284,10 +1270,6 @@ class UserDashboard:
 
         settings_items = [
             ("🌚", "Dark mode", "toggle"),
-            ("🙈", "Hide Amounts", "toggle"),
-            ("✉️", "Invite friends"),
-            ("💖", "Follow us"),
-            ("❓", "Help"),
             ("⚙️", "Settings"),
         ]
 
