@@ -79,11 +79,15 @@ class UserDashboard:
         add_expenses.display_add_expense_screen(self.root, self.auth_manager, self)
 
     def show_add_income_modal(self):
-        add_income.display_add_income_screen(self.root, self.auth_manager, self)
+        # TODO: Implement add income screen
+        from tkinter import messagebox
+        messagebox.showinfo("Coming Soon", "Add Income feature will be implemented soon!")
 
     def show_add_budget_modal(self):
-        add_budget.display_add_budget_screen(self.root, self.auth_manager, self)
-    
+        # TODO: Implement add budget screen
+        from tkinter import messagebox
+        messagebox.showinfo("Coming Soon", "Add Budget feature will be implemented soon!")
+        
     def _create_shadow_card(self, parent, bg_color=None):
         """Create a card frame with shadow effect"""
         if bg_color is None:
@@ -1331,8 +1335,14 @@ class UserDashboard:
 
             item_frame.bind("<Enter>", on_enter)
             item_frame.bind("<Leave>", on_leave)
-            item_frame.bind("<Button-1>", lambda e, txt=text: messagebox.showinfo("Sidebar", f"{txt} clicked!"))
+            def nav_click(e, txt=text):
+                if txt == "Records":
+                    import records_screen
+                    records_screen.display_records_screen(self.root, self.auth_manager, self)
+                else:
+                    messagebox.showinfo("Sidebar", f"{txt} clicked!")
 
+            item_frame.bind("<Button-1>", nav_click)
     # OLD METHODS - TO BE REMOVED OR KEPT FOR COMPATIBILITY
     def toggle_sidebar(self):
         """Legacy method - no longer used in new dashboard"""

@@ -62,5 +62,184 @@
                 "timestamp": "2025-10-20 03:13:24"
             }
         ]
+    },
+    "Foxija4358@fogdiver.com": {
+        "name": "Foxija4358@fogdiver.com",
+        "password": "6832cdd46613399aabecb0b4bacbeb5bd5f74c89fd8ef0c0de901f8f54f88179",
+        "created_at": "2025-10-20T08:06:25.380418",
+        "monthly_budget": 3000.0,
+        "currency": "INR",
+        "cash_balance": 0.0,
+        "expenses": [
+            {
+                "amount": 33.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 08:07:18"
+            }
+        ]
+    },
+    "Foxija43589@fogdiver.com": {
+        "name": "Foxija43589@fogdiver.com",
+        "password": "88aa0ed7e46abefb7e09626cc736d71195c41ed9e2556eff44c7f4947218700b",
+        "created_at": "2025-10-20T09:03:27.206836",
+        "monthly_budget": 3333.0,
+        "currency": "INR",
+        "cash_balance": 0.0,
+        "expenses": [
+            {
+                "amount": 33.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 09:06:13"
+            },
+            {
+                "amount": 590.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 09:06:30"
+            },
+            {
+                "amount": 942.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 09:06:42"
+            }
+        ]
+    },
+    "Foxija43598@fogdiver.com": {
+        "name": "Foxija43598@fogdiver.com",
+        "password": "11b645bf9fbf6d92e5d8345d720e367f4dc8fe6d08e2508f25801444fef0c79d",
+        "created_at": "2025-10-20T09:17:06.875955",
+        "monthly_budget": 6880.0,
+        "currency": "INR",
+        "cash_balance": 0.0,
+        "expenses": [
+            {
+                "amount": 600.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 09:17:26"
+            },
+            {
+                "amount": 200.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 09:17:37"
+            },
+            {
+                "amount": 348.0,
+                "category": "SHOPPING",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 09:17:49"
+            }
+        ]
+    },
+    "Koxija4358@fogdiver.com": {
+        "name": "Koxija4358@fogdiver.com",
+        "password": "4969a15999a0c01baf1af4c2215c00ad1be09be73d3d8c4ec4f7d33f86e28a92",
+        "created_at": "2025-10-20T14:26:34.642071",
+        "monthly_budget": 6000.0,
+        "currency": "INR",
+        "cash_balance": 0.0,
+        "expenses": [
+            {
+                "amount": 300.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 14:27:13"
+            },
+            {
+                "amount": 650.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 14:27:38"
+            },
+            {
+                "amount": 84.0,
+                "category": "UTILITIES",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 14:27:50"
+            }
+        ]
+    },
+    "Koxija9358@fogdiver.com": {
+        "name": "Koxija9358@fogdiver.com",
+        "password": "a08e7b01834657a10fb6c2d2e96327f8fd0191c70dc8cdc0dff0b053d25652d8",
+        "created_at": "2025-10-20T14:49:36.765380",
+        "monthly_budget": 6880.0,
+        "currency": "INR",
+        "cash_balance": 0.0,
+        "expenses": [
+            {
+                "amount": 300.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 14:50:04"
+            },
+            {
+                "amount": 522.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 14:50:13"
+            },
+            {
+                "amount": 500.0,
+                "category": "SHOPPING",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 14:50:23"
+            }
+        ]
+    },
+    "KOoxija4358@fogdiver.com": {
+        "name": "KOoxija4358@fogdiver.com",
+        "password": "1ffd112fe84bf2e24f591721565ae1556ca809b4abd3c2a2780b92c0e0242201",
+        "created_at": "2025-10-20T14:59:50.136817",
+        "monthly_budget": 6000.0,
+        "currency": "INR",
+        "cash_balance": 0.0,
+        "expenses": [
+            {
+                "amount": 600.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 15:00:26"
+            },
+            {
+                "amount": 900.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 15:00:36"
+            },
+            {
+                "amount": 6.0,
+                "category": "ENTERTAINMENT",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 15:00:45"
+            },
+            {
+                "amount": 5.0,
+                "category": "UTILITIES",
+                "account": "CASH",
+                "date": "2025-10-20",
+                "timestamp": "2025-10-20 15:00:54"
+            }
+        ]
     }
 }
