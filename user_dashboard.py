@@ -1443,8 +1443,7 @@ class UserDashboard:
             item_frame.bind("<Leave>", on_leave)
             def nav_click(e, txt=text):
                 if txt == "Records":
-                    import records_screen
-                    records_screen.display_records_screen(self.root, self.auth_manager, self)
+                    pass  # Do nothing when 'Records' is clicked
                 else:
                     messagebox.showinfo("Sidebar", f"{txt} clicked!")
 
