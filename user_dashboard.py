@@ -655,13 +655,15 @@ class UserDashboard:
         currency_code = self.auth_manager.get_current_user_data().get('currency', 'INR')
         currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
         cash_balance = self.auth_manager.get_current_user_data().get('cash_balance', 0.0)
+        bank_balance = self.auth_manager.get_current_user_data().get('bank_balance', 0.0)
+        credit_card_balance = self.auth_manager.get_current_user_data().get('credit_card_balance', 0.0)
         
         # Account cards
         self._create_account_card(scrollable_frame, "Cash", "💵", f"{currency_symbol}{cash_balance:.2f}", 
                                    "", self.PRIMARY_COLOR, self.SECONDARY_COLOR, vertical_offset=0)
-        self._create_account_card(scrollable_frame, "Bank", "🏦", f"{currency_symbol}0.00", 
+        self._create_account_card(scrollable_frame, "Bank", "🏦", f"{currency_symbol}{bank_balance:.2f}", 
                                    "", "#66BB6A", "#4CAF50", vertical_offset=0)
-        self._create_account_card(scrollable_frame, "Credit Card", "💳", f"{currency_symbol}0.00", 
+        self._create_account_card(scrollable_frame, "Credit Card", "💳", f"{currency_symbol}{credit_card_balance:.2f}", 
                                    "", "#FFA726", "#FF9800", vertical_offset=6) # Increased downward shift further
         
         # Add Account button

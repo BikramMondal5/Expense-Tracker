@@ -266,6 +266,10 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
             # Update cash balance
             if account == "CASH": # Assuming only CASH affects cash_balance for now
                 user_data['cash_balance'] -= amount
+            elif account == "BANK":
+                user_data['bank_balance'] -= amount
+            elif account == "CREDIT CARD":
+                user_data['credit_card_balance'] -= amount
 
             auth_manager.save_users()
             

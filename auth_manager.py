@@ -17,6 +17,13 @@ class AuthManager:
         if os.path.exists(self.users_file):
             with open(self.users_file, 'r') as f:
                 self.users = json.load(f)
+            # Ensure all loaded users have 'bank_balance' and 'credit_card_balance'
+            for user_email in self.users:
+                if "bank_balance" not in self.users[user_email]:
+                    self.users[user_email]["bank_balance"] = 0.0
+                if "credit_card_balance" not in self.users[user_email]:
+                    self.users[user_email]["credit_card_balance"] = 0.0
+            self.save_users() # Save updated user data with new fields
         else:
             self.users = {}
 
@@ -89,6 +96,8 @@ class AuthManager:
             "monthly_budget": None,
             "currency": None,
             "cash_balance": 0.0,
+            "bank_balance": 0.0,
+            "credit_card_balance": 0.0,
             "expenses": []
         }
         
