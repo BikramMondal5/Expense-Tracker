@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import config
 from datetime import datetime
+from tkcalendar import Calendar
 
 def display_add_expense_screen(root, auth_manager, dashboard_instance):
     """Displays the add expense screen as a modal popup."""
@@ -37,16 +38,35 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     top_section.pack(fill=tk.X)
 
     # Back button
+    date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d")) # Initialize with current date
+
+    def show_calendar_modal():
+        calendar_modal = tk.Toplevel(modal)
+        calendar_modal.title("Select Date")
+        calendar_modal.transient(modal)
+        calendar_modal.grab_set()
+        
+        cal = Calendar(calendar_modal, selectmode='day', date_pattern='yyyy-mm-dd')
+        cal.pack(pady=20)
+
+        def set_date():
+            selected_date = cal.selection_get()
+            date_var.set(selected_date.strftime("%Y-%m-%d"))
+            date_label.config(text=date_var.get()) # Update the date label
+            calendar_modal.destroy()
+
+        tk.Button(calendar_modal, text="Select Date", command=set_date).pack(pady=10)
+
     back_btn = tk.Label(
         top_section,
-        text="✕",
-        font=("Segoe UI", 20, "bold"),
+        text="📅", # Changed to calendar icon
+        font=("Segoe UI Emoji", 20),
         bg="#00BFFF",
         fg="white",
         cursor="hand2"
     )
     back_btn.pack(anchor="w", padx=20, pady=10)
-    back_btn.bind("<Button-1>", lambda e: modal.destroy())
+    back_btn.bind("<Button-1>", lambda e: show_calendar_modal()) # Bind to show_calendar_modal
 
     # Amount display frame
     amount_display_frame = tk.Frame(blue_section_frame, bg="#00BFFF")
@@ -73,6 +93,16 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         fg="white"
     )
     amount_currency_label.pack(side=tk.LEFT, padx=(10, 0))
+
+    # Current Date display
+    date_label = tk.Label(
+        blue_section_frame,
+        textvariable=date_var, # Use StringVar for dynamic update
+        font=("Segoe UI", 12),
+        bg="#00BFFF",
+        fg="white"
+    )
+    date_label.pack(pady=(0, 10))
 
     # Account and Category selection section
     selection_frame = tk.Frame(blue_section_frame, bg="#00BFFF")
@@ -201,18 +231,17 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     keypad_frame.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
 
     keys = [
-        ["7", "8", "9", "÷"],
-        ["4", "5", "6", "×"],
-        ["1", "2", "3", "-"],
-        [".", "0", "⌫", "+"],
-        ["=", "=", "=", "="]  # Equal button spans full width
+        ["7", "8", "9"],
+        ["4", "5", "6"],
+        ["1", "2", "3"],
+        [".", "0", "⌫"]
     ]
 
     # Function to handle key presses
     def on_key_press(key):
         if key == "⌫":
             delete_last_char()
-        elif key in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "÷", "×", "-", "+"]:
+        elif key in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]:
             update_amount_display(key)
 
     # Function to simulate button press visual feedback
@@ -243,6 +272,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
             # Get expense details
             account = account_var.get()
             category = category_var.get()
+            date = date_var.get() # Get the selected date
             
             # Here you would typically save to the auth_manager
             # For now, we'll show a success message and go back to dashboard
@@ -257,8 +287,8 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
                 'amount': amount,
                 'category': category,
                 'account': account,
-                'date': datetime.now().strftime("%Y-%m-%d"),
-                'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                'date': date, # Store the selected date
+                'timestamp': f"{date} {datetime.now().strftime('%H:%M:%S')}"
             }
             
             user_data['expenses'].append(expense_entry)
@@ -286,7 +316,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     for r_idx, row in enumerate(keys):
         keypad_frame.grid_rowconfigure(r_idx, weight=1)
         
-        if r_idx == 4:  # Equal button row
+        if r_idx == 3:  # Equal button row
             keypad_frame.grid_columnconfigure(0, weight=1)
             equal_button = tk.Button(
                 keypad_frame,
@@ -301,16 +331,13 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
                 cursor="hand2",
                 command=lambda: process_expense()
             )
-            equal_button.grid(row=r_idx, column=0, columnspan=4, sticky="nsew", padx=1, pady=1)
+            equal_button.grid(row=r_idx, column=0, columnspan=3, sticky="nsew", padx=1, pady=1)
         else:
             for c_idx, key in enumerate(row):
                 keypad_frame.grid_columnconfigure(c_idx, weight=1)
 
                 # Determine button color based on key type
-                if key in ["÷", "×", "-", "+"]:
-                    bg_color = "#3591e2"  # Blue for operators
-                    fg_color = "white"     # White text for operators
-                elif key == "⌫":
+                if key == "⌫":
                     bg_color = "#FF6B6B"  # Light red for backspace
                     fg_color = "white"
                 elif key == ".":
@@ -323,11 +350,11 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
                 key_button = tk.Button(
                     keypad_frame,
                     text=key,
-                    font=("Segoe UI", 20, "bold") if key in ["÷", "×", "-", "+"] else ("Segoe UI", 24),
+                    font=("Segoe UI", 24),
                     bg=bg_color,
                     fg=fg_color,
-                    activebackground="#2c79c1" if key in ["÷", "×", "-", "+"] else ("#C0C0C0" if key == "." else "#D0D0D0"),
-                    activeforeground="white" if key in ["÷", "×", "-", "+", "⌫"] else "#333333",
+                    activebackground="#D0D0D0" if key != "." else "#C0C0C0", # Adjusted active background for non-operator keys
+                    activeforeground="white" if key == "⌫" else "#333333", # Adjusted active foreground
                     relief=tk.FLAT,
                     bd=0,
                     cursor="hand2",

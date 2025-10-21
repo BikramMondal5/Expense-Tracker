@@ -8,6 +8,7 @@ from tkinter import messagebox
 from datetime import datetime, timedelta
 import math
 import add_expenses # Import the new module
+import records_screen # Import the new module for all transactions
 
 class UserDashboard:
     def __init__(self, root, auth_manager, app_instance):
@@ -67,19 +68,23 @@ class UserDashboard:
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days - 1)
 
-        filtered_expenses = [exp for exp in expenses if start_date <= datetime.fromisoformat(exp['date']) <= end_date]
+        # Filter expenses for summary statistics (total spent, categories) within the specified days and up to now
+        summary_filtered_expenses = [exp for exp in expenses if start_date <= datetime.fromisoformat(exp['date']) <= end_date]
 
-        total_spent = sum(item['amount'] for item in filtered_expenses)
+        total_spent = sum(item['amount'] for item in summary_filtered_expenses)
         
         category_breakdown = {}
-        for item in filtered_expenses:
+        for item in summary_filtered_expenses:
             category = item['category'].capitalize() # Ensure consistent capitalization
             category_breakdown[category] = category_breakdown.get(category, 0) + item['amount']
 
         # Sort categories by amount spent for consistent display
         sorted_categories = sorted(category_breakdown.items(), key=lambda item: item[1], reverse=True)
 
-        recent_transactions = sorted(filtered_expenses, key=lambda x: datetime.fromisoformat(x['timestamp']), reverse=True)[:6]
+        # For recent transactions, sort all expenses by timestamp and take the latest 6, without date range filtering.
+        # This ensures newly added (past or future) transactions appear if they are truly the most recent additions.
+        all_expenses_sorted_by_timestamp = sorted(expenses, key=lambda x: datetime.fromisoformat(x['timestamp']), reverse=True)
+        recent_transactions = all_expenses_sorted_by_timestamp[:6]
 
         return total_spent, sorted_categories, recent_transactions
 
@@ -130,6 +135,7 @@ class UserDashboard:
 
     def display_dashboard(self):
         """Display the refined, single-screen dashboard"""
+        self.auth_manager.load_users() # Ensure latest data is loaded
         self.clear_frame()
         
         # Main container
@@ -1041,6 +1047,7 @@ class UserDashboard:
         currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
 
         _, _, recent_transactions = self._calculate_expense_summary(user_expenses, days=365) # Get all recent for table
+        print(f"DEBUG: Recent transactions for display in _create_recent_transactions: {recent_transactions}")
 
         # Clear existing items
         for item in self.transactions_tree.get_children():
@@ -1080,7 +1087,7 @@ class UserDashboard:
             cursor="hand2"
         )
         view_all.pack(pady=(8, 0))
-        view_all.bind("<Button-1>", lambda e: messagebox.showinfo("View All", "Full transaction list coming soon!"))
+        view_all.bind("<Button-1>", lambda e: records_screen.display_records_screen(self.root, self.auth_manager, self))
     
     def _create_top_categories(self, parent):
         """Create the top 3 expense categories widget"""
