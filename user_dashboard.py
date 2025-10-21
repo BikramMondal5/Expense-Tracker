@@ -26,6 +26,15 @@ class UserDashboard:
         self.SUCCESS = config.SUCCESS
         self.ERROR = config.ERROR
         
+        self.CURRENCY_SYMBOLS = {
+            "INR": "₹",
+            "USD": "$",
+            "EUR": "€",
+            "GBP": "£",
+            "JPY": "¥",
+            "AUD": "A$"
+        }
+        
         # Extended color palette for categories
         self.CATEGORY_COLORS = {
             'Food': '#FF6B6B',
@@ -53,6 +62,26 @@ class UserDashboard:
 
         self.dark_mode_enabled = tk.BooleanVar(value=False)
         self.hide_amounts_enabled = tk.BooleanVar(value=False)
+
+    def _calculate_expense_summary(self, expenses, days=30):
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=days - 1)
+
+        filtered_expenses = [exp for exp in expenses if start_date <= datetime.fromisoformat(exp['date']) <= end_date]
+
+        total_spent = sum(item['amount'] for item in filtered_expenses)
+        
+        category_breakdown = {}
+        for item in filtered_expenses:
+            category = item['category'].capitalize() # Ensure consistent capitalization
+            category_breakdown[category] = category_breakdown.get(category, 0) + item['amount']
+
+        # Sort categories by amount spent for consistent display
+        sorted_categories = sorted(category_breakdown.items(), key=lambda item: item[1], reverse=True)
+
+        recent_transactions = sorted(filtered_expenses, key=lambda x: datetime.fromisoformat(x['timestamp']), reverse=True)[:6]
+
+        return total_spent, sorted_categories, recent_transactions
 
     def toggle_dark_mode(self):
         """Toggle dark mode"""
@@ -286,15 +315,34 @@ class UserDashboard:
         for i in range(4):
             snapshot_frame.grid_columnconfigure(i, weight=1, uniform="snapshot")
         
-        currency = self.auth_manager.get_current_user_data().get('currency_symbol', '₹')
+        user_data = self.auth_manager.get_current_user_data()
+        user_expenses = user_data.get('expenses', [])
+        currency_code = user_data.get('currency', 'INR')
+        currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
+
+        # This Week's Spend
+        weekly_spent, _, _ = self._calculate_expense_summary(user_expenses, days=7)
         
+        # This Month's Spend
+        monthly_spent, _, _ = self._calculate_expense_summary(user_expenses, days=30)
+
+        # Average Daily Spend (Last 30 Days)
+        if user_expenses:
+            total_spent_30_days, _, _ = self._calculate_expense_summary(user_expenses, days=30)
+            avg_daily_spend = total_spent_30_days / 30
+        else:
+            avg_daily_spend = 0.0
+
+        # Total Balance
+        total_balance = user_data.get('cash_balance', 0.0)
+
         # Card 1: This Week's Spend
         self._create_mini_card(
             snapshot_frame, 0,
             icon="📅",
             label="This Week",
-            value=f"{currency}1,234",
-            trend="↑ 12%",
+            value=f"{currency_symbol}{weekly_spent:,.2f}",
+            trend="", # No dynamic trend for now
             trend_color=self.ERROR
         )
         
@@ -303,8 +351,8 @@ class UserDashboard:
             snapshot_frame, 1,
             icon="📆",
             label="This Month",
-            value=f"{currency}5,678",
-            trend="↓ 8%",
+            value=f"{currency_symbol}{monthly_spent:,.2f}",
+            trend="", # No dynamic trend for now
             trend_color=self.SUCCESS
         )
         
@@ -313,7 +361,7 @@ class UserDashboard:
             snapshot_frame, 2,
             icon="📊",
             label="Avg Daily",
-            value=f"{currency}189",
+            value=f"{currency_symbol}{avg_daily_spend:,.2f}",
             trend="Last 30 days",
             trend_color=self.TEXT_LIGHT
         )
@@ -323,7 +371,7 @@ class UserDashboard:
             snapshot_frame, 3,
             icon="💰",
             label="Total Balance",
-            value=f"{currency}12,456",
+            value=f"{currency_symbol}{total_balance:,.2f}",
             trend="All Accounts",
             trend_color=self.SUCCESS
         )
@@ -396,22 +444,29 @@ class UserDashboard:
         ).pack(side=tk.LEFT)
         
         # KPI Value
-        currency = self.auth_manager.get_current_user_data().get('currency_symbol', '₹')
+        user_data = self.auth_manager.get_current_user_data()
+        user_expenses = user_data.get('expenses', [])
+        currency_code = user_data.get('currency', 'INR')
+        currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
         
+        total_spent_30_days, _, _ = self._calculate_expense_summary(user_expenses, days=30)
+
         value_frame = tk.Frame(card_frame, bg=self.WHITE)
         value_frame.pack(fill=tk.X, pady=(0, 8))
         
         tk.Label(
             value_frame,
-            text=f"{currency}8,924",
+            text=f"{currency_symbol}{total_spent_30_days:,.2f}",
             font=self.FONT_KPI,
             bg=self.WHITE,
             fg=self.TEXT_DARK
         ).pack(side=tk.LEFT)
         
+        # Placeholder for trend comparison - dynamic calculation would be complex
+        # For now, it will remain static or show a default message
         tk.Label(
             value_frame,
-            text="vs previous 30 days: -15%",
+            text="", # Removed dynamic trend calculation
             font=self.FONT_CAPTION,
             bg=self.WHITE,
             fg=self.SUCCESS
@@ -423,12 +478,20 @@ class UserDashboard:
         
         fig, ax = plt.subplots(figsize=(6, 2.5), dpi=100, facecolor='white')
         
-        # Sample data
-        days = list(range(1, 31))
-        expenses = [200 + (i % 7) * 50 + (i % 3) * 30 for i in days]
+        # Generate daily expenses for the last 30 days
+        daily_expenses = { (datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d"): 0.0 for i in range(30) }
+        for expense in user_expenses:
+            date_str = expense['date']
+            if date_str in daily_expenses:
+                daily_expenses[date_str] += expense['amount']
         
-        ax.plot(days, expenses, color=self.PRIMARY_COLOR, linewidth=2)
-        ax.fill_between(days, expenses, alpha=0.3, color=self.ACCENT_COLOR)
+        # Sort by date and get values
+        sorted_dates = sorted(daily_expenses.keys())
+        expenses_data = [daily_expenses[date] for date in sorted_dates]
+        days = list(range(1, 31))
+
+        ax.plot(days, expenses_data, color=self.PRIMARY_COLOR, linewidth=2)
+        ax.fill_between(days, expenses_data, alpha=0.3, color=self.ACCENT_COLOR)
         ax.set_xlabel('Day of Month', fontsize=9, color=self.TEXT_LIGHT)
         ax.set_ylabel('Amount', fontsize=9, color=self.TEXT_LIGHT)
         ax.grid(True, linestyle='--', alpha=0.3, color=self.TEXT_LIGHT)
@@ -436,7 +499,6 @@ class UserDashboard:
         
         # Remove top and right spines
         ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
         
         plt.tight_layout()
         
@@ -469,11 +531,26 @@ class UserDashboard:
         chart_frame = tk.Frame(content_frame, bg=self.WHITE)
         chart_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         
-        # Sample data
-        categories = list(self.CATEGORY_COLORS.keys())
-        values = [35, 25, 15, 12, 8, 5]
-        colors = list(self.CATEGORY_COLORS.values())
-        currency = self.auth_manager.get_current_user_data().get('currency_symbol', '₹')
+        # Get dynamic data
+        user_data = self.auth_manager.get_current_user_data()
+        user_expenses = user_data.get('expenses', [])
+        currency_code = user_data.get('currency', 'INR')
+        currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
+
+        total_spent_30_days, category_breakdown, _ = self._calculate_expense_summary(user_expenses, days=30)
+
+        if total_spent_30_days == 0:
+            # Handle case with no expenses
+            categories = ["No Expenses"]
+            values = [1]
+            colors = ["#E0E0E0"]
+            total_display_amount = f"{currency_symbol}0.00"
+        else:
+            categories = [cat for cat, amount in category_breakdown]
+            values = [amount for cat, amount in category_breakdown]
+            # Assign colors, cycle through CATEGORY_COLORS or use a default if not found
+            colors = [self.CATEGORY_COLORS.get(cat, self.CATEGORY_COLORS['Others']) for cat in categories]
+            total_display_amount = f"{currency_symbol}{total_spent_30_days:,.2f}"
         
         fig, ax = plt.subplots(figsize=(4, 3.5), dpi=100, facecolor='white')
         
@@ -497,7 +574,7 @@ class UserDashboard:
         fig.gca().add_artist(centre_circle)
         
         # Total in center
-        ax.text(0, 0, f'{currency}8,924', ha='center', va='center',
+        ax.text(0, 0, total_display_amount, ha='center', va='center',
                 fontsize=14, weight='bold', color=self.TEXT_DARK)
         ax.text(0, -0.15, 'Total', ha='center', va='center',
                 fontsize=9, color=self.TEXT_LIGHT)
@@ -512,15 +589,6 @@ class UserDashboard:
         # Legend below chart
         legend_frame = tk.Frame(content_frame, bg=self.WHITE)
         legend_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(12, 0)) # Positioned below
-        
-        # Removed "Breakdown" title
-        # tk.Label(
-        #     legend_frame,
-        #     text="Breakdown",
-        #     font=self.FONT_HEADER, # Increased font size
-        #     bg=self.WHITE,
-        #     fg=self.TEXT_DARK
-        # ).pack(anchor="w", pady=(0, 8))
         
         # Arrange items horizontally with wrap-like effect
         row_num = 0
@@ -545,15 +613,6 @@ class UserDashboard:
                 fg=self.TEXT_DARK,
                 anchor="w"
             ).pack(side=tk.LEFT, fill=tk.X, expand=True)
-            
-            # Removed percentage value
-            # tk.Label(
-            #     item_frame,
-            #     text=f"{value}%",
-            #     font=self.FONT_BODY, # Increased font size
-            #     bg=self.WHITE,
-            #     fg=self.TEXT_LIGHT
-            # ).pack(side=tk.RIGHT)
 
             col_num += 1
             if col_num >= max_cols:
@@ -593,16 +652,17 @@ class UserDashboard:
         canvas.pack(side=tk.TOP, fill=tk.X, expand=True)
         # scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
         
-        currency = self.auth_manager.get_current_user_data().get('currency_symbol', '₹')
+        currency_code = self.auth_manager.get_current_user_data().get('currency', 'INR')
+        currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
         cash_balance = self.auth_manager.get_current_user_data().get('cash_balance', 0.0)
         
         # Account cards
-        self._create_account_card(scrollable_frame, "Cash", "💵", f"{currency}{cash_balance:.2f}", 
-                                   "▲ 5%", self.PRIMARY_COLOR, self.SECONDARY_COLOR, vertical_offset=0)
-        self._create_account_card(scrollable_frame, "Bank", "🏦", f"{currency}5,234.56", 
-                                   "▲ 2%", "#66BB6A", "#4CAF50", vertical_offset=0)
-        self._create_account_card(scrollable_frame, "Credit Card", "💳", f"{currency}2,150.00", 
-                                   "▼ 10%", "#FFA726", "#FF9800", vertical_offset=6) # Increased downward shift further
+        self._create_account_card(scrollable_frame, "Cash", "💵", f"{currency_symbol}{cash_balance:.2f}", 
+                                   "", self.PRIMARY_COLOR, self.SECONDARY_COLOR, vertical_offset=0)
+        self._create_account_card(scrollable_frame, "Bank", "🏦", f"{currency_symbol}0.00", 
+                                   "", "#66BB6A", "#4CAF50", vertical_offset=0)
+        self._create_account_card(scrollable_frame, "Credit Card", "💳", f"{currency_symbol}0.00", 
+                                   "", "#FFA726", "#FF9800", vertical_offset=6) # Increased downward shift further
         
         # Add Account button
         add_btn_frame = tk.Frame(scrollable_frame, bg=self.BG_LIGHT, 
@@ -745,9 +805,20 @@ class UserDashboard:
         )
         
         # Progress arc
-        currency = self.auth_manager.get_current_user_data().get('currency_symbol', '₹')
-        monthly_budget = self.auth_manager.get_current_user_data().get('monthly_budget', 10000)
-        spent_amount = 6800
+        user_data = self.auth_manager.get_current_user_data()
+        user_expenses = user_data.get('expenses', [])
+        currency_code = user_data.get('currency', 'INR')
+        currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
+        monthly_budget = user_data.get('monthly_budget', 0.0)
+        
+        # Calculate spent amount for the current month
+        today = datetime.now()
+        start_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        spent_amount = sum(expense['amount'] for expense in user_expenses
+                           if datetime.fromisoformat(expense['timestamp']) >= start_of_month and
+                           datetime.fromisoformat(expense['timestamp']) <= today)
+
         percentage = min(100, (spent_amount / monthly_budget) * 100) if monthly_budget > 0 else 0
         
         # Determine color based on percentage
@@ -801,7 +872,7 @@ class UserDashboard:
         
         tk.Label(
             spent_frame,
-            text=f"{currency}{spent_amount:,.2f}",
+            text=f"{currency_symbol}{spent_amount:,.2f}",
             font=self.FONT_VALUE,
             bg=self.WHITE,
             fg=self.TEXT_DARK
@@ -821,7 +892,7 @@ class UserDashboard:
         
         tk.Label(
             total_frame,
-            text=f"{currency}{monthly_budget:,.2f}",
+            text=f"{currency_symbol}{monthly_budget:,.2f}",
             font=self.FONT_BODY,
             bg=self.WHITE,
             fg=self.TEXT_DARK
@@ -842,7 +913,7 @@ class UserDashboard:
         
         tk.Label(
             remaining_frame,
-            text=f"{currency}{remaining:,.2f}",
+            text=f"{currency_symbol}{remaining:,.2f}",
             font=self.FONT_VALUE,
             bg=self.WHITE,
             fg=self.SUCCESS if remaining >= 0 else self.ERROR
@@ -932,6 +1003,7 @@ class UserDashboard:
         
         # Configure treeview style
         style = ttk.Style()
+        style.theme_use("default") # Use default theme to avoid issues with custom styles if any
         style.configure("Transactions.Treeview", 
                        background=self.WHITE,
                        foreground=self.TEXT_DARK,
@@ -960,27 +1032,35 @@ class UserDashboard:
             else:
                 self.transactions_tree.column(col, anchor=tk.W, width=120)
         
-        # Sample data
-        sample_transactions = [
-            ("Oct 18", "🍔 Food", f"-₹150.00", "food"),
-            ("Oct 17", "🚌 Transport", f"-₹50.00", "transport"),
-            ("Oct 16", "💸 Salary", f"+₹5,000.00", "income"),
-            ("Oct 15", "🎬 Entertainment", f"-₹300.00", "entertainment"),
-            ("Oct 14", "🛒 Shopping", f"-₹700.00", "shopping"),
-            ("Oct 13", "💡 Utilities", f"-₹400.00", "utilities"),
-        ]
-        
-        for item in sample_transactions:
-            self.transactions_tree.insert("", "end", values=item[:-1], tags=(item[-1],))
+        # Get dynamic data
+        user_data = self.auth_manager.get_current_user_data()
+        user_expenses = user_data.get('expenses', [])
+        currency_code = user_data.get('currency', 'INR')
+        currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
+
+        _, _, recent_transactions = self._calculate_expense_summary(user_expenses, days=365) # Get all recent for table
+
+        # Clear existing items
+        for item in self.transactions_tree.get_children():
+            self.transactions_tree.delete(item)
+
+        if not recent_transactions:
+            self.transactions_tree.insert("", "end", values=("", "No transactions yet", ""))
+        else:
+            for expense in recent_transactions:
+                display_date = datetime.fromisoformat(expense['date']).strftime("%b %d")
+                category = expense['category'].capitalize()
+                amount = expense['amount']
+                # Determine if it's an expense or income (for now, all are expenses)
+                amount_text = f"-{currency_symbol}{amount:,.2f}"
+                tag = category.lower() # Use lower case for tags
+                self.transactions_tree.insert("", "end", values=(display_date, f"● {category}", amount_text), tags=(tag,))
         
         # Configure tags for color-coding
-        self.transactions_tree.tag_configure("food", foreground=self.CATEGORY_COLORS['Food'])
-        self.transactions_tree.tag_configure("transport", foreground=self.CATEGORY_COLORS['Transport'])
-        self.transactions_tree.tag_configure("income", foreground=self.SUCCESS)
-        self.transactions_tree.tag_configure("entertainment", foreground=self.CATEGORY_COLORS['Entertainment'])
-        self.transactions_tree.tag_configure("shopping", foreground=self.CATEGORY_COLORS['Shopping'])
-        self.transactions_tree.tag_configure("utilities", foreground=self.CATEGORY_COLORS['Utilities'])
-        
+        for category_name, color_hex in self.CATEGORY_COLORS.items():
+            self.transactions_tree.tag_configure(category_name.lower(), foreground=color_hex)
+        self.transactions_tree.tag_configure("income", foreground=self.SUCCESS) # If income is ever added
+
         self.transactions_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
         # Scrollbar
@@ -1014,70 +1094,90 @@ class UserDashboard:
             fg=self.TEXT_DARK
         ).pack(anchor="w", pady=(0, 12))
         
-        # Top 3 categories
-        top_categories = [
-            ("🥇", "🍔 Food", "₹3,120", 35, self.CATEGORY_COLORS['Food']),
-            ("🥈", "🚌 Transport", "₹2,230", 25, self.CATEGORY_COLORS['Transport']),
-            ("🥉", "🎬 Entertainment", "₹1,340", 15, self.CATEGORY_COLORS['Entertainment']),
-        ]
+        # Get dynamic data
+        user_data = self.auth_manager.get_current_user_data()
+        user_expenses = user_data.get('expenses', [])
+        currency_code = user_data.get('currency', 'INR')
+        currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
+
+        total_spent_this_month, category_breakdown, _ = self._calculate_expense_summary(user_expenses, days=30)
+
+        top_categories_data = []
+        if total_spent_this_month > 0:
+            # Get top 3 categories by amount spent this month
+            sorted_categories = category_breakdown # Already sorted from _calculate_expense_summary
+            for i, (category, amount) in enumerate(sorted_categories[:3]):
+                percentage = (amount / total_spent_this_month) * 100
+                rank_icon = ["🥇", "🥈", "🥉"][i]
+                color = self.CATEGORY_COLORS.get(category, self.CATEGORY_COLORS['Others'])
+                top_categories_data.append((rank_icon, f"● {category}", f"{currency_symbol}{amount:,.2f}", percentage, color))
         
-        for rank, category, amount, percentage, color in top_categories:
-            item_frame = tk.Frame(card_frame, bg=self.WHITE)
-            item_frame.pack(fill=tk.X, pady=8)
-            
-            # Rank badge
+        if not top_categories_data:
             tk.Label(
-                item_frame,
-                text=rank,
-                font=self.FONT_XXL,
-                bg=self.WHITE
-            ).pack(side=tk.LEFT, padx=(0, 12))
-            
-            # Category details
-            details_frame = tk.Frame(item_frame, bg=self.WHITE)
-            details_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
-            
-            # Category name
-            tk.Label(
-                details_frame,
-                text=category,
-                font=self.FONT_SUBHEADER,
-                bg=self.WHITE,
-                fg=self.TEXT_DARK
-            ).pack(anchor="w")
-            
-            # Amount and percentage
-            info_frame = tk.Frame(details_frame, bg=self.WHITE)
-            info_frame.pack(fill=tk.X, pady=(2, 4))
-            
-            tk.Label(
-                info_frame,
-                text=amount,
-                font=self.FONT_VALUE,
-                bg=self.WHITE,
-                fg=self.TEXT_DARK
-            ).pack(side=tk.LEFT)
-            
-            tk.Label(
-                info_frame,
-                text=f"{percentage}% of total",
-                font=self.FONT_CAPTION,
+                card_frame,
+                text="No expenses recorded this month.",
+                font=self.FONT_BODY,
                 bg=self.WHITE,
                 fg=self.TEXT_LIGHT
-            ).pack(side=tk.LEFT, padx=8)
-            
-            # Progress bar
-            progress_bg = tk.Frame(details_frame, bg="#E0E0E0", height=4)
-            progress_bg.pack(fill=tk.X)
-            
-            progress_fill = tk.Frame(progress_bg, bg=color, height=4)
-            progress_fill.place(relwidth=percentage/100, relheight=1.0)
+            ).pack(anchor="w", pady=10)
+        else:
+            for rank, category, amount, percentage, color in top_categories_data:
+                item_frame = tk.Frame(card_frame, bg=self.WHITE)
+                item_frame.pack(fill=tk.X, pady=8)
+                
+                # Rank badge
+                tk.Label(
+                    item_frame,
+                    text=rank,
+                    font=self.FONT_XXL,
+                    bg=self.WHITE
+                ).pack(side=tk.LEFT, padx=(0, 12))
+                
+                # Category details
+                details_frame = tk.Frame(item_frame, bg=self.WHITE)
+                details_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
+                
+                # Category name
+                tk.Label(
+                    details_frame,
+                    text=category,
+                    font=self.FONT_SUBHEADER,
+                    bg=self.WHITE,
+                    fg=self.TEXT_DARK
+                ).pack(anchor="w")
+                
+                # Amount and percentage
+                info_frame = tk.Frame(details_frame, bg=self.WHITE)
+                info_frame.pack(fill=tk.X, pady=(2, 4))
+                
+                tk.Label(
+                    info_frame,
+                    text=amount,
+                    font=self.FONT_VALUE,
+                    bg=self.WHITE,
+                    fg=self.TEXT_DARK
+                ).pack(side=tk.LEFT)
+                
+                tk.Label(
+                    info_frame,
+                    text=f"{percentage:.1f}% of total",
+                    font=self.FONT_CAPTION,
+                    bg=self.WHITE,
+                    fg=self.TEXT_LIGHT
+                ).pack(side=tk.LEFT, padx=8)
+                
+                # Progress bar
+                progress_bg = tk.Frame(details_frame, bg="#E0E0E0", height=4)
+                progress_bg.pack(fill=tk.X)
+                
+                progress_fill = tk.Frame(progress_bg, bg=color, height=4)
+                progress_fill.place(relwidth=percentage/100, relheight=1.0)
     
     def _create_fab(self, parent):
         """Create the floating action button group"""
         # Container for FAB and sub-buttons
         fab_container = tk.Frame(parent, bg=self.BG_LIGHT)
-        fab_container.place(relx=0.98, rely=0.98, anchor=tk.SE)
+        fab_container.place(relx=1.0, rely=1.0, anchor=tk.SE, x=-20, y=-20) # Adjusted position to be more visible
         
         # Main FAB button - now a circular canvas
         fab_canvas_size = 60 # Diameter of the circle

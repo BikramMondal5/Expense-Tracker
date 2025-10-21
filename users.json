@@ -10,7 +10,7 @@
         "created_at": "2025-10-19T11:35:22.851655",
         "monthly_budget": 3000.0,
         "currency": "INR",
-        "cash_balance": 0.0,
+        "cash_balance": -520.0,
         "expenses": [
             {
                 "amount": 593571.0,
@@ -60,6 +60,20 @@
                 "account": "CASH",
                 "date": "2025-10-20",
                 "timestamp": "2025-10-20 03:13:24"
+            },
+            {
+                "amount": 500.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-21",
+                "timestamp": "2025-10-21 16:14:19"
+            },
+            {
+                "amount": 520.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-21",
+                "timestamp": "2025-10-21 16:29:39"
             }
         ]
     },
@@ -239,6 +253,37 @@
                 "account": "CASH",
                 "date": "2025-10-20",
                 "timestamp": "2025-10-20 15:00:54"
+            }
+        ]
+    },
+    "pythonLover3@gmail.com": {
+        "name": "Bikram Mondal",
+        "password": "e9556fd3f6c39491554742eb003a48aa605b04a760d634d34a419aff2821cfea",
+        "created_at": "2025-10-21T16:31:12.953224",
+        "monthly_budget": 5000.0,
+        "currency": "INR",
+        "cash_balance": -225.0,
+        "expenses": [
+            {
+                "amount": 200.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-21",
+                "timestamp": "2025-10-21 16:32:28"
+            },
+            {
+                "amount": 25.0,
+                "category": "FOOD",
+                "account": "CASH",
+                "date": "2025-10-21",
+                "timestamp": "2025-10-21 16:33:34"
+            },
+            {
+                "amount": 80.0,
+                "category": "FUEL",
+                "account": "CREDIT CARD",
+                "date": "2025-10-21",
+                "timestamp": "2025-10-21 16:37:08"
             }
         ]
     }

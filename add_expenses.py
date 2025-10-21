@@ -262,6 +262,11 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
             }
             
             user_data['expenses'].append(expense_entry)
+            
+            # Update cash balance
+            if account == "CASH": # Assuming only CASH affects cash_balance for now
+                user_data['cash_balance'] -= amount
+
             auth_manager.save_users()
             
             messagebox.showinfo("Success", f"Expense of {currency_code} {amount} added successfully!")

@@ -88,7 +88,8 @@ class AuthManager:
             "created_at": datetime.now().isoformat(),
             "monthly_budget": None,
             "currency": None,
-            "cash_balance": None
+            "cash_balance": 0.0,
+            "expenses": []
         }
         
         self.save_users()
