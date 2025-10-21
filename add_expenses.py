@@ -25,8 +25,8 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     # Main container with light blue background
     main_frame = tk.Frame(modal, bg="#00BFFF")
     main_frame.pack(fill=tk.BOTH, expand=True)
-    main_frame.grid_rowconfigure(0, weight=6)
-    main_frame.grid_rowconfigure(1, weight=4)
+    main_frame.grid_rowconfigure(0, weight=5) # Reduced weight for blue section
+    main_frame.grid_rowconfigure(1, weight=5) # Increased weight for keypad section
     main_frame.grid_columnconfigure(0, weight=1)
 
     # Blue section frame to hold all top elements
@@ -234,7 +234,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         ["7", "8", "9"],
         ["4", "5", "6"],
         ["1", "2", "3"],
-        [".", "0", "⌫"]
+        [".", "0", "⌫",]
     ]
 
     # Function to handle key presses
@@ -316,70 +316,44 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     for r_idx, row in enumerate(keys):
         keypad_frame.grid_rowconfigure(r_idx, weight=1)
         
-        if r_idx == 3:  # Submit button row
-            keypad_frame.grid_columnconfigure(0, weight=1)
-            keypad_frame.grid_columnconfigure(1, weight=1)
-            keypad_frame.grid_columnconfigure(2, weight=1)
+        for c_idx, key in enumerate(row):
+            keypad_frame.grid_columnconfigure(c_idx, weight=1)
 
-            # Place . 0 and ⌫ buttons
-            for c_idx, key in enumerate(row):
-                bg_color = "#E0E0E0"
-                fg_color = "#333333"
-                if key == "⌫":
-                    bg_color = "#FF6B6B"  # Light red for backspace
-                    fg_color = "white"
-                elif key == ".":
-                    bg_color = "#C0C0C0"
+            # Determine button color based on key type
+            # All numeric and functional keys will have a consistent light grey background and dark text.
+            bg_color = "#E0E0E0"
+            fg_color = "#333333"
+            active_bg_color = "#D0D0D0"
+            active_fg_color = "#333333"
 
-                key_button = tk.Button(
-                    keypad_frame,
-                    text=key,
-                    font=("Segoe UI", 20),
-                    bg=bg_color,
-                    fg=fg_color,
-                    activebackground="#D0D0D0" if key not in [".", "⌫"] else ("#C0C0C0" if key == "." else "#CC5B5B"),
-                    activeforeground="white" if key == "⌫" else "#333333",
-                    relief=tk.FLAT,
-                    bd=0,
-                    cursor="hand2",
-                    command=lambda k=key: on_key_press(k)
-                )
-                key_button.grid(row=r_idx, column=c_idx, sticky="nsew", padx=1, pady=1)
-        else:
-            for c_idx, key in enumerate(row):
-                keypad_frame.grid_columnconfigure(c_idx, weight=1)
+            # Specific styling for backspace (X) for visual distinction, if desired, otherwise it will match numbers
+            if key == "⌫":
+                bg_color = "#E0E0E0"  # Keep consistent with other keys
+                fg_color = "#333333" # Dark text for backspace symbol
+                active_bg_color = "#FF8F8F" # Slightly redder on hover for delete action
+                active_fg_color = "white"
 
-                # Determine button color based on key type
-                if key == "⌫":
-                    bg_color = "#FF6B6B"  # Light red for backspace
-                    fg_color = "white"
-                elif key == ".":
-                    bg_color = "#C0C0C0"
-                    fg_color = "#333333"
-                else:
-                    bg_color = "#E0E0E0"
-                    fg_color = "#333333"
-
-                key_button = tk.Button(
-                    keypad_frame,
-                    text=key,
-                    font=("Segoe UI", 20),
-                    bg=bg_color,
-                    fg=fg_color,
-                    activebackground="#D0D0D0" if key != "." else "#C0C0C0", # Adjusted active background for non-operator keys
-                    activeforeground="white" if key == "⌫" else "#333333", # Adjusted active foreground
-                    relief=tk.FLAT,
-                    bd=0,
-                    cursor="hand2",
-                    command=lambda k=key: on_key_press(k)
-                )
-                key_button.grid(row=r_idx, column=c_idx, sticky="nsew", padx=1, pady=1)
-
-    # Submit button re-added below the keypad
+            key_button = tk.Button(
+                keypad_frame,
+                text=key,
+                font=("Segoe UI", 24),
+                bg=bg_color,
+                fg=fg_color,
+                activebackground=active_bg_color,
+                activeforeground=active_fg_color,
+                relief=tk.FLAT,
+                bd=0,
+                cursor="hand2",
+                command=lambda k=key: on_key_press(k)
+            )
+            key_button.grid(row=r_idx, column=c_idx, sticky="nsew", padx=1, pady=1)
+    
+    # Submit button - now in a separate row at the bottom
+    keypad_frame.grid_rowconfigure(len(keys), weight=1) # Configure the new row
     submit_button = tk.Button(
-        keypad_container,  # Place it in keypad_container, below the keypad_frame
+        keypad_frame,
         text="Submit",
-        font=("Segoe UI", 20, "bold"),
+        font=("Segoe UI", 24, "bold"),
         bg="#5C6BC0",
         fg="white",
         activebackground="#4A5B9C",
@@ -389,7 +363,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         cursor="hand2",
         command=lambda: process_expense()
     )
-    submit_button.pack(fill=tk.X, padx=1, pady=(10, 1))
+    submit_button.grid(row=len(keys), column=0, columnspan=3, sticky="nsew", padx=1, pady=1)
 
 def display_onboarding_screen(root, auth_manager, app_instance, primary_color, secondary_color, accent_color, bg_light, text_dark, text_light, white, success, error):
     """Displays the combined onboarding screen for monthly budget and currency."""
