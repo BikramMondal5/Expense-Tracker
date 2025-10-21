@@ -37,7 +37,11 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     top_section = tk.Frame(blue_section_frame, bg="#00BFFF")
     top_section.pack(fill=tk.X)
 
-    # Back button
+    # New frame to hold calendar, amount, and currency on the same row
+    top_header_row_frame = tk.Frame(blue_section_frame, bg="#00BFFF")
+    top_header_row_frame.pack(fill=tk.X, pady=(10, 0)) # Reduced top padding here
+
+    # Back button (calendar icon)
     date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d")) # Initialize with current date
 
     def show_calendar_modal():
@@ -58,19 +62,19 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         tk.Button(calendar_modal, text="Select Date", command=set_date).pack(pady=10)
 
     back_btn = tk.Label(
-        top_section,
+        top_header_row_frame, # Packed in the new header row
         text="📅", # Changed to calendar icon
         font=("Segoe UI Emoji", 20),
         bg="#00BFFF",
         fg="white",
         cursor="hand2"
     )
-    back_btn.pack(anchor="w", padx=20, pady=10)
+    back_btn.pack(side=tk.LEFT, anchor="nw", padx=20, pady=0) # Aligned left, no vertical padding
     back_btn.bind("<Button-1>", lambda e: show_calendar_modal()) # Bind to show_calendar_modal
 
-    # Amount display frame
-    amount_display_frame = tk.Frame(blue_section_frame, bg="#00BFFF")
-    amount_display_frame.pack(fill=tk.X)
+    # Amount display frame (now within top_header_row_frame)
+    amount_display_frame = tk.Frame(top_header_row_frame, bg="#00BFFF")
+    amount_display_frame.pack(side=tk.RIGHT, expand=True, padx=(0,20)) # Packed right within header row
 
     amount_value_label = tk.Label(
         amount_display_frame,
@@ -94,7 +98,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     )
     amount_currency_label.pack(side=tk.LEFT, padx=(10, 0))
 
-    # Current Date display
+    # Current Date display (remains below, but adjust padding)
     date_label = tk.Label(
         blue_section_frame,
         textvariable=date_var, # Use StringVar for dynamic update
@@ -102,11 +106,11 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         bg="#00BFFF",
         fg="white"
     )
-    date_label.pack(pady=(0, 10))
+    date_label.pack(pady=(0, 15)) # Added bottom padding for spacing
 
     # Account and Category selection section
     selection_frame = tk.Frame(blue_section_frame, bg="#00BFFF")
-    selection_frame.pack(fill=tk.X)
+    selection_frame.pack(fill=tk.X, pady=(0, 15)) # Added bottom padding here
 
     # Account selector
     account_frame = tk.Frame(selection_frame, bg="#00BFFF")
@@ -200,7 +204,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         activeforeground="white",
         command=open_templates_modal
     )
-    templates_btn.pack()
+    templates_btn.pack(pady=(0, 15)) # Added bottom padding here
 
     # Function to update the amount display
     def update_amount_display(value):

@@ -246,7 +246,7 @@ class UserDashboard:
         # Project Name
         tk.Label(
             left_logo_frame,
-            text="WalletWise",
+            text="MyWallet", # Changed from "WalletWise"
             font=self.FONT_XL,
             bg=self.PRIMARY_COLOR,
             fg=self.WHITE
@@ -1047,7 +1047,6 @@ class UserDashboard:
         currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
 
         _, _, recent_transactions = self._calculate_expense_summary(user_expenses, days=365) # Get all recent for table
-        print(f"DEBUG: Recent transactions for display in _create_recent_transactions: {recent_transactions}")
 
         # Clear existing items
         for item in self.transactions_tree.get_children():
@@ -1322,7 +1321,6 @@ class UserDashboard:
         nav_items_main = [
             ("🏠", "Home"),
             ("📋", "Records"),
-            ("📊", "Statistics", "New"),
             ("💰", "Budgets"),
         ]
         self._create_nav_section(nav_frame, nav_items_main, section_title=None)
@@ -1334,7 +1332,6 @@ class UserDashboard:
         settings_frame.pack(fill=tk.X, expand=True)
 
         settings_items = [
-            ("🌚", "Dark mode", "toggle"),
             ("⚙️", "Settings"),
         ]
 
