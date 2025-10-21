@@ -1,6 +1,6 @@
 # 💰📊 Personal Expense Tracker
 
-![Image-preview](./public/logo.jpeg)
+![Image-preview](./public/screenshot.png)
 A simple yet powerful **Python-based Expense Tracker** that helps you take control of your daily, weekly, and monthly spending habits.  
 Easily add expenses, visualize your spending trends with pie charts, and store all your data securely in MongoDB - all through an intuitive Tkinter GUI.
 
