@@ -316,22 +316,35 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     for r_idx, row in enumerate(keys):
         keypad_frame.grid_rowconfigure(r_idx, weight=1)
         
-        if r_idx == 3:  # Equal button row
+        if r_idx == 3:  # Submit button row
             keypad_frame.grid_columnconfigure(0, weight=1)
-            equal_button = tk.Button(
-                keypad_frame,
-                text="Submit",
-                font=("Segoe UI", 24, "bold"),
-                bg="#5C6BC0",
-                fg="white",
-                activebackground="#4A5B9C",
-                activeforeground="white",
-                relief=tk.FLAT,
-                bd=0,
-                cursor="hand2",
-                command=lambda: process_expense()
-            )
-            equal_button.grid(row=r_idx, column=0, columnspan=3, sticky="nsew", padx=1, pady=1)
+            keypad_frame.grid_columnconfigure(1, weight=1)
+            keypad_frame.grid_columnconfigure(2, weight=1)
+
+            # Place . 0 and ⌫ buttons
+            for c_idx, key in enumerate(row):
+                bg_color = "#E0E0E0"
+                fg_color = "#333333"
+                if key == "⌫":
+                    bg_color = "#FF6B6B"  # Light red for backspace
+                    fg_color = "white"
+                elif key == ".":
+                    bg_color = "#C0C0C0"
+
+                key_button = tk.Button(
+                    keypad_frame,
+                    text=key,
+                    font=("Segoe UI", 20),
+                    bg=bg_color,
+                    fg=fg_color,
+                    activebackground="#D0D0D0" if key not in [".", "⌫"] else ("#C0C0C0" if key == "." else "#CC5B5B"),
+                    activeforeground="white" if key == "⌫" else "#333333",
+                    relief=tk.FLAT,
+                    bd=0,
+                    cursor="hand2",
+                    command=lambda k=key: on_key_press(k)
+                )
+                key_button.grid(row=r_idx, column=c_idx, sticky="nsew", padx=1, pady=1)
         else:
             for c_idx, key in enumerate(row):
                 keypad_frame.grid_columnconfigure(c_idx, weight=1)
@@ -350,7 +363,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
                 key_button = tk.Button(
                     keypad_frame,
                     text=key,
-                    font=("Segoe UI", 24),
+                    font=("Segoe UI", 20),
                     bg=bg_color,
                     fg=fg_color,
                     activebackground="#D0D0D0" if key != "." else "#C0C0C0", # Adjusted active background for non-operator keys
@@ -361,6 +374,22 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
                     command=lambda k=key: on_key_press(k)
                 )
                 key_button.grid(row=r_idx, column=c_idx, sticky="nsew", padx=1, pady=1)
+
+    # Submit button re-added below the keypad
+    submit_button = tk.Button(
+        keypad_container,  # Place it in keypad_container, below the keypad_frame
+        text="Submit",
+        font=("Segoe UI", 20, "bold"),
+        bg="#5C6BC0",
+        fg="white",
+        activebackground="#4A5B9C",
+        activeforeground="white",
+        relief=tk.FLAT,
+        bd=0,
+        cursor="hand2",
+        command=lambda: process_expense()
+    )
+    submit_button.pack(fill=tk.X, padx=1, pady=(10, 1))
 
 def display_onboarding_screen(root, auth_manager, app_instance, primary_color, secondary_color, accent_color, bg_light, text_dark, text_light, white, success, error):
     """Displays the combined onboarding screen for monthly budget and currency."""

@@ -1047,7 +1047,6 @@ class UserDashboard:
         currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
 
         _, _, recent_transactions = self._calculate_expense_summary(user_expenses, days=365) # Get all recent for table
-        print(f"DEBUG: Recent transactions for display in _create_recent_transactions: {recent_transactions}")
 
         # Clear existing items
         for item in self.transactions_tree.get_children():
