@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import math
 import add_expenses # Import the new module
 import records_screen # Import the new module for all transactions
+from all_transactions_screen import display_all_transactions_screen
 
 class UserDashboard:
     def __init__(self, root, auth_manager, app_instance):
@@ -1086,7 +1087,7 @@ class UserDashboard:
             cursor="hand2"
         )
         view_all.pack(pady=(8, 0))
-        view_all.bind("<Button-1>", lambda e: records_screen.display_records_screen(self.root, self.auth_manager, self))
+        view_all.bind("<Button-1>", lambda e: display_all_transactions_screen(self.root, self.auth_manager, self))
     
     def _create_top_categories(self, parent):
         """Create the top 3 expense categories widget"""

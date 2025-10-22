@@ -12,14 +12,28 @@
         "created_at": "2025-10-19T11:35:22.851655",
         "monthly_budget": 3000.0,
         "currency": "INR",
-        "cash_balance": -520.0,
+        "cash_balance": -561.2,
         "expenses": [
             {
-                "amount": 593571.0,
-                "category": "SHOPPING",
-                "account": "CREDIT CARD",
-                "date": "2025-10-19",
-                "timestamp": "2025-10-19 17:59:12"
+                "amount": 20.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-22",
+                "timestamp": "2025-10-22 15:56:59"
+            },
+            {
+                "amount": 500.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-21",
+                "timestamp": "2025-10-21 16:14:19"
+            },
+            {
+                "amount": 520.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-21",
+                "timestamp": "2025-10-21 16:29:39"
             },
             {
                 "amount": 62.0,
@@ -64,18 +78,18 @@
                 "timestamp": "2025-10-20 03:13:24"
             },
             {
-                "amount": 500.0,
-                "category": "FUEL",
-                "account": "CASH",
-                "date": "2025-10-21",
-                "timestamp": "2025-10-21 16:14:19"
+                "amount": 593571.0,
+                "category": "SHOPPING",
+                "account": "CREDIT CARD",
+                "date": "2025-10-19",
+                "timestamp": "2025-10-19 17:59:12"
             },
             {
-                "amount": 520.0,
-                "category": "TRANSPORT",
+                "amount": 21.2,
+                "category": "ENTERTAINMENT",
                 "account": "CASH",
                 "date": "2025-10-21",
-                "timestamp": "2025-10-21 16:29:39"
+                "timestamp": "2025-10-21 16:16:28"
             }
         ],
         "bank_balance": 0.0,
