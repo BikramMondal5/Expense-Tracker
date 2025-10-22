@@ -22,11 +22,25 @@
                 "timestamp": "2025-10-22 15:56:59"
             },
             {
-                "amount": 507777777777.0,
+                "amount": 5077.0,
                 "category": "UTILITIES",
                 "account": "BANK",
                 "date": "2025-10-22",
                 "timestamp": "2025-10-22 16:50:07"
+            },
+            {
+                "amount": 4105.0,
+                "category": "ENTERTAINMENT",
+                "account": "CREDIT CARD",
+                "date": "2025-10-22",
+                "timestamp": "2025-10-22 17:28:24"
+            },
+            {
+                "amount": 20.0,
+                "category": "FUEL",
+                "account": "CREDIT CARD",
+                "date": "2025-10-22",
+                "timestamp": "2025-10-22 17:55:38"
             },
             {
                 "amount": 500.0,
@@ -106,15 +120,15 @@
                 "timestamp": "2025-10-15 17:08:08"
             },
             {
-                "amount": 4105.0,
-                "category": "ENTERTAINMENT",
-                "account": "CREDIT CARD",
+                "amount": 78.0,
+                "category": "TRANSPORT",
+                "account": "BANK",
                 "date": "2025-10-22",
-                "timestamp": "2025-10-22 17:28:24"
+                "timestamp": "2025-10-22 18:04:34"
             }
         ],
-        "bank_balance": -507777777777.0,
-        "credit_card_balance": -4105.0
+        "bank_balance": -507777777855.0,
+        "credit_card_balance": -4125.0
     },
     "Foxija4358@fogdiver.com": {
         "name": "Foxija4358@fogdiver.com",
@@ -767,6 +781,46 @@
                 "account": "CASH",
                 "date": "2025-10-22",
                 "timestamp": "2025-10-22 12:50:29"
+            }
+        ]
+    },
+    "codingNinja7@gmail.com": {
+        "name": "Bikram Mondal",
+        "password": "d8811f73ae3ef0468d2f566f50043b823d4abcd51272376f3bc9bad3846468ca",
+        "created_at": "2025-10-22T19:36:55.347022",
+        "monthly_budget": 2500.0,
+        "currency": "INR",
+        "cash_balance": -606.0,
+        "bank_balance": -520.0,
+        "credit_card_balance": -29.5,
+        "expenses": [
+            {
+                "amount": 20.0,
+                "category": "FOOD",
+                "account": "CASH",
+                "date": "2025-10-21",
+                "timestamp": "2025-10-21 19:37:44"
+            },
+            {
+                "amount": 29.5,
+                "category": "FUEL",
+                "account": "CREDIT CARD",
+                "date": "2025-10-22",
+                "timestamp": "2025-10-22 19:38:27"
+            },
+            {
+                "amount": 520.0,
+                "category": "ENTERTAINMENT",
+                "account": "BANK",
+                "date": "2025-10-22",
+                "timestamp": "2025-10-22 19:39:15"
+            },
+            {
+                "amount": 586.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-10-22",
+                "timestamp": "2025-10-22 19:39:37"
             }
         ]
     }

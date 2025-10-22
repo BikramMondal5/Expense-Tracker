@@ -126,7 +126,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     account_label.pack()
 
     account_var = tk.StringVar(value="CASH")
-    account_options = ["CASH", "BANK", "CREDIT CARD", "WALLET"]
+    account_options = ["CASH", "BANK", "CREDIT CARD"]
     
     account_display = tk.Label(
         account_frame,

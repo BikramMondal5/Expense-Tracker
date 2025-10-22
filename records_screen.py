@@ -16,6 +16,7 @@ periods = [
 
 def display_records_screen(root, auth_manager, dashboard_instance):
     """Displays the records screen as a modal popup."""
+    print("display_records_screen called!")
     # Create a modal window (Toplevel)
     modal = tk.Toplevel(root)
     modal.title("Records")
