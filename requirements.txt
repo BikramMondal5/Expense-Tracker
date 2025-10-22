@@ -7,6 +7,7 @@ matplotlib>=3.6
 pymongo>=4.3
 
 tkcalendar>=1.6
+ReportLab>=4.0.0
 
 # Note: tkinter is part of the Python standard library on most installations (Windows/macOS). 
 # If your Python distribution does not include tkinter, install it via your OS package manager.
