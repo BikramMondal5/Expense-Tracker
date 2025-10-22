@@ -1,8 +1,12 @@
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
 from datetime import datetime
 import config
 import csv
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
 
 class AllTransactionsScreen:
     def __init__(self, master, auth_manager, app_instance):
@@ -25,16 +29,16 @@ class AllTransactionsScreen:
         control_frame = ttk.Frame(self.window, padding="10")
         control_frame.pack(fill=tk.X)
 
-        # Export to CSV Button
+        # Export button with dropdown
         export_button = ttk.Button(
             control_frame,
-            text="Export to CSV",
-            command=self._export_to_csv,
+            text="Export",
+            command=self._show_export_dropdown,
             style="Export.TButton"
         )
         export_button.pack(side=tk.RIGHT, padx=(10, 0))
 
-        # Define style for the Export to CSV button
+        # Define style for the Export button
         s = ttk.Style()
         s.configure("Export.TButton",
             background="#2ECC71", # Green background
@@ -48,8 +52,6 @@ class AllTransactionsScreen:
             background=[('active', "#2ECC71")], # Keep background green on hover
             foreground=[('active', "white")]  # Keep foreground white on hover
         )
-        # To achieve border-radius, we often need to use a custom element or a different approach.
-        # Tkinter's default theming might make direct border-radius challenging.
         # We can simulate a rounded corner by using a slight padding and the flat relief.
         # The borderwidth=0 and relief='flat' helps remove default borders.
         # For a true border-radius, often an image or canvas drawing is used.
@@ -152,5 +154,77 @@ class AllTransactionsScreen:
         except Exception as e:
             tk.messagebox.showerror("Export Error", f"An error occurred during export: {e}")
 
+    def _export_to_pdf(self):
+        try:
+            file_path = filedialog.asksaveasfilename(
+                defaultextension=".pdf",
+                filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")],
+                title="Save Transactions as PDF"
+            )
+            if not file_path:  # User cancelled
+                return
+
+            user_data = self.auth_manager.get_current_user_data()
+            all_expenses = user_data.get('expenses', [])
+            currency_code = user_data.get('currency', 'INR')
+            currency_symbol = config.CURRENCY_SYMBOLS.get(currency_code, '₹')
+
+            doc = SimpleDocTemplate(file_path, pagesize=letter)
+            styles = getSampleStyleSheet()
+            story = []
+
+            # Add title
+            story.append(Paragraph("All Transactions", styles['h1']))
+            story.append(Paragraph("<br/><br/>", styles['Normal']))
+
+            # Prepare data for table
+            data = [["Date", "Category", "Amount", "Account", "Timestamp"]]
+            for expense in all_expenses:
+                display_date = datetime.fromisoformat(expense['date']).strftime("%Y-%m-%d")
+                category = expense['category'].capitalize()
+                amount = f"{currency_symbol}{expense['amount']:.2f}"
+                account = expense.get('account', 'N/A')
+                timestamp = expense.get('timestamp', 'N/A')
+                data.append([display_date, category, amount, account, timestamp])
+
+            # Create table style
+            table_style = TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor(config.PRIMARY_COLOR)),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor(config.BG_LIGHT)),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                ('TOPPADDING', (0, 0), (-1, -1), 6),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ])
+            
+            # Create table and apply style
+            table = Table(data)
+            table.setStyle(table_style)
+            story.append(table)
+
+            doc.build(story)
+            tk.messagebox.showinfo("Export Successful", f"Transactions exported to {file_path}")
+        except Exception as e:
+            tk.messagebox.showerror("Export Error", f"An error occurred during PDF export: {e}")
+
+    def _show_export_dropdown(self):
+        menu = tk.Menu(self.master, tearoff=0)
+        menu.add_command(label="Export to CSV", command=self._export_to_csv)
+        menu.add_command(label="Export to PDF", command=self._export_to_pdf)
+
+        # Display the menu at the current mouse position
+        try:
+            x = self.window.winfo_pointerx()
+            y = self.window.winfo_pointery()
+            menu.tk_popup(x, y)
+        finally:
+            menu.grab_release()
+        
 def display_all_transactions_screen(master, auth_manager, app_instance):
     AllTransactionsScreen(master, auth_manager, app_instance)

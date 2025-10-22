@@ -104,10 +104,17 @@
                 "account": "CASH",
                 "date": "2025-10-15",
                 "timestamp": "2025-10-15 17:08:08"
+            },
+            {
+                "amount": 4105.0,
+                "category": "ENTERTAINMENT",
+                "account": "CREDIT CARD",
+                "date": "2025-10-22",
+                "timestamp": "2025-10-22 17:28:24"
             }
         ],
         "bank_balance": -507777777777.0,
-        "credit_card_balance": 0.0
+        "credit_card_balance": -4105.0
     },
     "Foxija4358@fogdiver.com": {
         "name": "Foxija4358@fogdiver.com",
