@@ -136,14 +136,18 @@ def display_records_screen(root, auth_manager, dashboard_instance):
     )
     summary_amount.pack(fill=tk.X, padx=15, pady=(0, 15))
 
-    # Scrollable transactions list
-    list_container = tk.Frame(main_frame, bg=config.BG_LIGHT)
-    list_container.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
+    # Scrollable transactions list - white container
+    list_outer_container = tk.Frame(main_frame, bg=config.BG_LIGHT)
+    list_outer_container.pack(fill=tk.BOTH, expand=True, padx=15, pady=0)
+
+    # White background container
+    list_container = tk.Frame(list_outer_container, bg=config.WHITE)
+    list_container.pack(fill=tk.BOTH, expand=True, padx=0, pady=10)
 
     # Canvas for scrolling
-    canvas = tk.Canvas(list_container, bg=config.BG_LIGHT, highlightthickness=0)
+    canvas = tk.Canvas(list_container, bg=config.WHITE, highlightthickness=0)
     scrollbar = tk.Scrollbar(list_container, orient="vertical", command=canvas.yview)
-    scrollable_frame = tk.Frame(canvas, bg=config.BG_LIGHT)
+    scrollable_frame = tk.Frame(canvas, bg=config.WHITE)
 
     scrollable_frame.bind(
         "<Configure>",
@@ -190,13 +194,13 @@ def display_records_screen(root, auth_manager, dashboard_instance):
         """Create a transaction card"""
         # Month separator if needed
         if month_label:
-            separator = tk.Frame(parent, bg=config.BG_LIGHT, height=30)
+            separator = tk.Frame(parent, bg=config.WHITE, height=30)
             separator.pack(fill=tk.X)
             tk.Label(
                 separator,
                 text=month_label,
                 font=("Segoe UI", 12, "bold"),
-                bg=config.BG_LIGHT,
+                bg=config.WHITE,
                 fg=config.TEXT_DARK
             ).pack(side=tk.LEFT, padx=15)
 
@@ -305,13 +309,28 @@ def display_records_screen(root, auth_manager, dashboard_instance):
         period_total = 0
 
         for expense in expenses:
-            expense_date = datetime.strptime(expense.get('date', ''), '%Y-%m-%d').date()
-            if start_range <= expense_date <= end_range:
-                filtered_expenses.append(expense)
-                period_total += expense.get('amount', 0)
+            try:
+                expense_date = datetime.strptime(expense.get('date', ''), '%Y-%m-%d').date()
+                if start_range <= expense_date <= end_range:
+                    filtered_expenses.append(expense)
+                    period_total += expense.get('amount', 0)
+            except ValueError:
+                continue  # Skip invalid dates
 
         # Update total amount
         total_amount.set(f"{currency_symbol}{period_total:.2f}")
+
+        if not filtered_expenses:
+            # Show a message if no expenses found
+            empty_label = tk.Label(
+                scrollable_frame,
+                text="No expenses found for this period",
+                font=("Segoe UI", 12),
+                bg=config.WHITE,
+                fg=config.TEXT_DARK
+            )
+            empty_label.pack(pady=20)
+            return
 
         # Sort expenses by date
         filtered_expenses.sort(key=lambda x: x.get('date', ''), reverse=True)
