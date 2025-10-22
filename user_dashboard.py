@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import math
 import add_expenses # Import the new module
 import records_screen # Import the new module for all transactions
+from all_transactions_screen import display_all_transactions_screen
 
 class UserDashboard:
     def __init__(self, root, auth_manager, app_instance):
@@ -1086,7 +1087,7 @@ class UserDashboard:
             cursor="hand2"
         )
         view_all.pack(pady=(8, 0))
-        view_all.bind("<Button-1>", lambda e: records_screen.display_records_screen(self.root, self.auth_manager, self))
+        view_all.bind("<Button-1>", lambda e: display_all_transactions_screen(self.root, self.auth_manager, self))
     
     def _create_top_categories(self, parent):
         """Create the top 3 expense categories widget"""
@@ -1441,13 +1442,14 @@ class UserDashboard:
 
             item_frame.bind("<Enter>", on_enter)
             item_frame.bind("<Leave>", on_leave)
-            def nav_click(e, txt=text):
-                if txt == "Records":
-                    records_screen.display_records_screen(self.root, self.auth_manager, self)
-                else:
-                    messagebox.showinfo("Sidebar", f"{txt} clicked!")
+            
+            if text == "Records":
+                item_frame.bind("<Button-1>", lambda e: records_screen.display_records_screen(self.root, self.auth_manager, self))
+            else:
+                # Only bind Button-1 for non-toggle items
+                if text not in ["Dark mode", "Hide Amounts"]:
+                    item_frame.bind("<Button-1>", lambda e, txt=text: messagebox.showinfo("Sidebar", f"{txt} clicked!"))
 
-            item_frame.bind("<Button-1>", nav_click)
     # OLD METHODS - TO BE REMOVED OR KEPT FOR COMPATIBILITY
     def toggle_sidebar(self):
         """Legacy method - no longer used in new dashboard"""
