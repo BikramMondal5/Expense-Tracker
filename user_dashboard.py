@@ -10,6 +10,7 @@ import math
 import add_expenses # Import the new module
 import records_screen # Import the new module for all transactions
 from all_transactions_screen import display_all_transactions_screen
+from onboarding_screen import display_onboarding_screen
 
 class UserDashboard:
     def __init__(self, root, auth_manager, app_instance):
@@ -118,11 +119,102 @@ class UserDashboard:
         from tkinter import messagebox
         messagebox.showinfo("Coming Soon", "Add Income feature will be implemented soon!")
 
-    def show_add_budget_modal(self):
-        # TODO: Implement add budget screen
-        from tkinter import messagebox
-        messagebox.showinfo("Coming Soon", "Add Budget feature will be implemented soon!")
+    def show_budget_window(self):
+        """Show the budget setup window (same as onboarding)"""
+        display_onboarding_screen(
+            self.root, 
+            self.auth_manager, 
+            self,
+            self.PRIMARY_COLOR,
+            self.SECONDARY_COLOR,
+            self.ACCENT_COLOR,
+            self.BG_LIGHT,
+            self.TEXT_DARK,
+            self.TEXT_LIGHT,
+            self.WHITE,
+            self.SUCCESS,
+            self.ERROR
+        )
         
+    def show_add_budget_modal(self):
+        # Open the budget window (re-uses onboarding logic)
+        self.show_budget_window()
+        
+    def show_edit_budget_modal(self):
+        """Open a modal to edit the user's monthly budget and currency."""
+        user_data = self.auth_manager.get_current_user_data() or {}
+        current_budget = user_data.get('monthly_budget', 0.0) or 0.0
+        current_currency = user_data.get('currency', 'INR')
+
+        modal = tk.Toplevel(self.root)
+        modal.title("Edit Monthly Budget")
+        modal.geometry("420x300")
+        modal.resizable(False, False)
+        modal.transient(self.root)
+        modal.grab_set()
+
+        # Center modal
+        modal.update_idletasks()
+        x = self.root.winfo_x() + (self.root.winfo_width() - 420) // 2
+        y = self.root.winfo_y() + (self.root.winfo_height() - 300) // 2
+        modal.geometry(f"420x300+{x}+{y}")
+
+        frame = tk.Frame(modal, bg=self.WHITE, padx=16, pady=12)
+        frame.pack(fill=tk.BOTH, expand=True)
+
+        tk.Label(frame, text="Monthly Budget", font=self.FONT_HEADER, bg=self.WHITE, fg=self.TEXT_DARK).pack(anchor="w")
+        tk.Label(frame, text="Set or update your monthly budget and currency.", font=self.FONT_SM, bg=self.WHITE, fg=self.TEXT_LIGHT).pack(anchor="w", pady=(0,8))
+
+        # Currency selector
+        currency_options = [
+            "INR - Indian Rupee (₹)", "USD - US Dollar ($)", "EUR - Euro (€)",
+            "GBP - British Pound (£)", "JPY - Japanese Yen (¥)", "AUD - Australian Dollar ($)"
+        ]
+        # Prefer the verbose option (e.g. "INR - Indian Rupee (₹)") if available
+        default_currency_option = next((opt for opt in currency_options if opt.startswith(current_currency)), currency_options[0])
+        currency_var = tk.StringVar(value=default_currency_option)
+        currency_menu = tk.OptionMenu(frame, currency_var, *currency_options)
+        currency_menu.config(font=self.FONT_SM, bd=0, relief=tk.FLAT)
+        currency_menu.pack(fill=tk.X, pady=(6, 12))
+
+        # Budget entry
+        tk.Label(frame, text="Amount", font=self.FONT_SUBHEADER, bg=self.WHITE, fg=self.TEXT_DARK).pack(anchor="w")
+        budget_var = tk.StringVar(value=f"{current_budget:.2f}" if current_budget else "0")
+        budget_entry = tk.Entry(frame, textvariable=budget_var, font=(config.FONT_PRIMARY, 16), bd=1, relief=tk.SOLID)
+        budget_entry.pack(fill=tk.X, pady=(6, 12))
+
+        button_frame = tk.Frame(frame, bg=self.WHITE)
+        button_frame.pack(fill=tk.X, pady=(6,0))
+
+        def apply_budget():
+            val = budget_var.get().strip()
+            if val == "":
+                messagebox.showerror("Error", "Please enter a budget amount")
+                return
+            # Allow commas
+            try:
+                # Accept values like "1,000" or "1000.50"
+                parsed = float(val.replace(",", ""))
+                if parsed < 0:
+                    messagebox.showerror("Error", "Budget cannot be negative")
+                    return
+            except ValueError:
+                messagebox.showerror("Error", "Please enter a valid number for budget")
+                return
+
+            # Use the same format as onboarding: currency full string
+            success, msg = self.auth_manager.onboard_user(val, currency_var.get())
+            if success:
+                messagebox.showinfo("Success", msg)
+                modal.destroy()
+                # Refresh dashboard to reflect new budget values
+                self.display_dashboard()
+            else:
+                messagebox.showerror("Error", msg)
+
+        tk.Button(button_frame, text="Cancel", font=self.FONT_SM, bg=self.BG_LIGHT, fg=self.TEXT_DARK, relief=tk.FLAT, command=modal.destroy).pack(side=tk.LEFT)
+        tk.Button(button_frame, text="Save", font=self.FONT_SM, bg=self.PRIMARY_COLOR, fg=self.WHITE, relief=tk.FLAT, command=apply_budget).pack(side=tk.RIGHT)
+
     def _create_shadow_card(self, parent, bg_color=None):
         """Create a card frame with shadow effect"""
         if bg_color is None:
@@ -340,8 +432,15 @@ class UserDashboard:
         else:
             avg_daily_spend = 0.0
 
-        # Total Balance
-        total_balance = user_data.get('cash_balance', 0.0)
+        # Get monthly budget and current month's expenses
+        monthly_budget = user_data.get('monthly_budget', 0.0)
+        today = datetime.now()
+        start_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        current_month_expenses = sum(expense['amount'] for expense in user_expenses
+                                  if datetime.fromisoformat(expense['timestamp']) >= start_of_month)
+        
+        # Calculate remaining budget for this month
+        remaining_budget = monthly_budget - current_month_expenses
 
         # Card 1: This Week's Spend
         self._create_mini_card(
@@ -373,14 +472,14 @@ class UserDashboard:
             trend_color=self.TEXT_LIGHT
         )
         
-        # Card 4: Total Balance
+        # Card 4: Remaining Budget
         self._create_mini_card(
             snapshot_frame, 3,
             icon="💰",
-            label="Total Balance",
-            value=f"{currency_symbol}{total_balance:,.2f}",
-            trend="All Accounts",
-            trend_color=self.SUCCESS
+            label="Remaining Budget",
+            value=f"{currency_symbol}{remaining_budget:,.2f}",
+            trend="This Month",
+            trend_color=self.SUCCESS if remaining_budget >= 0 else self.ERROR
         )
     
     def _create_mini_card(self, parent, column, icon, label, value, trend, trend_color):
@@ -1445,6 +1544,9 @@ class UserDashboard:
             
             if text == "Records":
                 item_frame.bind("<Button-1>", lambda e: records_screen.display_records_screen(self.root, self.auth_manager, self))
+            elif text == "Budgets":
+                # Open the budget setup window (same as onboarding)
+                item_frame.bind("<Button-1>", lambda e: self.show_budget_window())
             else:
                 # Only bind Button-1 for non-toggle items
                 if text not in ["Dark mode", "Hide Amounts"]:
@@ -1454,6 +1556,10 @@ class UserDashboard:
     def toggle_sidebar(self):
         """Legacy method - no longer used in new dashboard"""
         pass
+        
+    def show_dashboard(self):
+        """Refresh and display the dashboard"""
+        self.display_dashboard()
     
     def show_tab(self, tab_name):
         """Legacy method - no longer used in new dashboard"""
