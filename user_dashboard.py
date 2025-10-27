@@ -271,10 +271,18 @@ class UserDashboard:
         content_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         content_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
-        # Add mouse wheel scrolling
+        # Add mouse wheel scrolling only when mouse is over the canvas
         def _on_mousewheel(event):
             content_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-        content_canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        
+        def _bind_mousewheel(event):
+            content_canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        
+        def _unbind_mousewheel(event):
+            content_canvas.unbind_all("<MouseWheel>")
+        
+        content_canvas.bind("<Enter>", _bind_mousewheel)
+        content_canvas.bind("<Leave>", _unbind_mousewheel)
         
         # ===== QUICK SNAPSHOT ROW =====
         self._create_quick_snapshot(scrollable_frame)
@@ -1355,10 +1363,18 @@ class UserDashboard:
         sidebar_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         sidebar_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Add mouse wheel scrolling to sidebar
+        # Add mouse wheel scrolling to sidebar only when mouse is over it
         def _on_sidebar_mousewheel(event):
             sidebar_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-        sidebar_canvas.bind_all("<MouseWheel>", _on_sidebar_mousewheel)
+        
+        def _bind_sidebar_mousewheel(event):
+            sidebar_canvas.bind_all("<MouseWheel>", _on_sidebar_mousewheel)
+        
+        def _unbind_sidebar_mousewheel(event):
+            sidebar_canvas.unbind_all("<MouseWheel>")
+        
+        sidebar_canvas.bind("<Enter>", _bind_sidebar_mousewheel)
+        sidebar_canvas.bind("<Leave>", _unbind_sidebar_mousewheel)
 
         # Custom style for the switch toggle
         style = ttk.Style()

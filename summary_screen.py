@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import json
 import google.generativeai as genai
 from gemini_config import GEMINI_API_KEY
+import re
 
 # Configure Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
@@ -140,6 +141,19 @@ class SummaryScreen:
         self.chat_display.tag_config("user", foreground=self.PRIMARY_COLOR, font=("Segoe UI", 11, "bold"))
         self.chat_display.tag_config("ai", foreground=self.ACCENT_COLOR, font=("Segoe UI", 11, "bold"))
         self.chat_display.tag_config("timestamp", foreground=self.TEXT_LIGHT, font=("Segoe UI", 9))
+        
+        # Configure markdown formatting tags
+        self.chat_display.tag_config("bold", font=("Segoe UI", 11, "bold"))
+        self.chat_display.tag_config("italic", font=("Segoe UI", 11, "italic"))
+        self.chat_display.tag_config("heading1", font=("Segoe UI", 18, "bold"), foreground=self.TEXT_DARK, spacing1=10, spacing3=5)
+        self.chat_display.tag_config("heading2", font=("Segoe UI", 16, "bold"), foreground=self.TEXT_DARK, spacing1=8, spacing3=4)
+        self.chat_display.tag_config("heading3", font=("Segoe UI", 14, "bold"), foreground=self.TEXT_DARK, spacing1=6, spacing3=3)
+        self.chat_display.tag_config("code", font=("Consolas", 10), background="#f0f0f0", foreground="#d63031")
+        self.chat_display.tag_config("code_block", font=("Consolas", 10), background="#f5f5f5", foreground="#2d3436", lmargin1=20, lmargin2=20, spacing1=5, spacing3=5)
+        self.chat_display.tag_config("bullet", lmargin1=20, lmargin2=40, spacing1=2)
+        self.chat_display.tag_config("number", lmargin1=20, lmargin2=40, spacing1=2)
+        self.chat_display.tag_config("blockquote", lmargin1=20, lmargin2=20, foreground=self.TEXT_LIGHT, font=("Segoe UI", 11, "italic"))
+        self.chat_display.tag_config("link", foreground="#0984e3", underline=True)
         
         # Input area
         input_frame = tk.Frame(right_frame, bg=self.WHITE)
@@ -288,7 +302,7 @@ class SummaryScreen:
             self._update_last_ai_message(f"❌ Sorry, I encountered an error: {str(e)}\n\nPlease try again or rephrase your question.")
     
     def _update_last_ai_message(self, new_message):
-        """Update the last AI message in the chat display"""
+        """Update the last AI message in the chat display with markdown rendering"""
         self.chat_display.config(state=tk.NORMAL)
         
         # Find and delete the last AI message
@@ -306,11 +320,13 @@ class SummaryScreen:
             # Delete from that line to the end
             self.chat_display.delete(f"{last_ai_index + 1}.0", tk.END)
             
-            # Add the new message
+            # Add the new message with markdown rendering
             timestamp = datetime.now().strftime("%I:%M %p")
             self.chat_display.insert(tk.END, "AI Assistant", "ai")
             self.chat_display.insert(tk.END, f" • {timestamp}\n", "timestamp")
-            self.chat_display.insert(tk.END, f"{new_message}\n")
+            
+            # Render markdown-formatted message
+            self._render_markdown(new_message)
             
             self.chat_history.append({"role": "ai", "message": new_message, "timestamp": timestamp})
         
@@ -364,6 +380,27 @@ Guidelines:
 - Provide practical, actionable advice
 - Be positive and encouraging
 - Use the correct currency symbol ({currency_symbol})
+
+IMPORTANT - Formatting Instructions:
+- Use markdown formatting in your responses
+- Use **bold** for emphasis on important numbers or key points
+- Use bullet points (- or •) for lists
+- Use numbered lists (1. 2. 3.) for step-by-step recommendations
+- Use ### for section headings when breaking down complex responses
+- Use emojis at the start of sections or key points for visual appeal
+- Example format:
+  
+  ### 📊 Your Weekly Summary
+  
+  **Total Spent**: {currency_symbol}1,234.56
+  
+  **Top Categories**:
+  - Food: {currency_symbol}450 (36%)
+  - Transport: {currency_symbol}320 (26%)
+  
+  **💡 Recommendations**:
+  1. Try meal prepping to reduce food costs
+  2. Consider carpooling for transport savings
 """
 
         user_prompt = f"User Question: {user_message}"
@@ -469,6 +506,167 @@ Category Breakdown:"""
         
         return summary
     
+    def _render_markdown(self, text):
+        """Render markdown-formatted text to the chat display with proper formatting"""
+        # Split text into lines for processing
+        lines = text.split('\n')
+        i = 0
+        in_code_block = False
+        code_block_content = []
+        
+        while i < len(lines):
+            line = lines[i]
+            
+            # Handle code blocks (```)
+            if line.strip().startswith('```'):
+                if not in_code_block:
+                    in_code_block = True
+                    code_block_content = []
+                else:
+                    # End of code block
+                    in_code_block = False
+                    if code_block_content:
+                        self.chat_display.insert(tk.END, '\n'.join(code_block_content) + '\n', "code_block")
+                    code_block_content = []
+                i += 1
+                continue
+            
+            if in_code_block:
+                code_block_content.append(line)
+                i += 1
+                continue
+            
+            # Handle headings
+            if line.startswith('### '):
+                self.chat_display.insert(tk.END, line[4:] + '\n', "heading3")
+            elif line.startswith('## '):
+                self.chat_display.insert(tk.END, line[3:] + '\n', "heading2")
+            elif line.startswith('# '):
+                self.chat_display.insert(tk.END, line[2:] + '\n', "heading1")
+            
+            # Handle bullet points
+            elif line.strip().startswith('- ') or line.strip().startswith('• '):
+                bullet_text = line.strip()[2:]
+                formatted_text = self._format_inline_markdown(bullet_text)
+                self.chat_display.insert(tk.END, '• ', "bullet")
+                self._insert_formatted_text(formatted_text, "bullet")
+                self.chat_display.insert(tk.END, '\n')
+            
+            # Handle numbered lists
+            elif re.match(r'^\d+\.\s', line.strip()):
+                match = re.match(r'^(\d+)\.\s(.+)', line.strip())
+                if match:
+                    num, text = match.groups()
+                    formatted_text = self._format_inline_markdown(text)
+                    self.chat_display.insert(tk.END, f'{num}. ', "number")
+                    self._insert_formatted_text(formatted_text, "number")
+                    self.chat_display.insert(tk.END, '\n')
+            
+            # Handle blockquotes
+            elif line.strip().startswith('> '):
+                quote_text = line.strip()[2:]
+                self.chat_display.insert(tk.END, quote_text + '\n', "blockquote")
+            
+            # Handle horizontal rules
+            elif line.strip() in ['---', '***', '___']:
+                self.chat_display.insert(tk.END, '─' * 50 + '\n')
+            
+            # Handle regular text with inline formatting
+            else:
+                if line.strip():  # Only process non-empty lines
+                    formatted_text = self._format_inline_markdown(line)
+                    self._insert_formatted_text(formatted_text)
+                self.chat_display.insert(tk.END, '\n')
+            
+            i += 1
+    
+    def _format_inline_markdown(self, text):
+        """Parse inline markdown formatting and return formatted segments"""
+        segments = []
+        i = 0
+        current_text = ""
+        
+        while i < len(text):
+            # Bold (**text** or __text__)
+            if text[i:i+2] == '**' or text[i:i+2] == '__':
+                if current_text:
+                    segments.append(('normal', current_text))
+                    current_text = ""
+                
+                # Find closing
+                end_marker = text[i:i+2]
+                end_pos = text.find(end_marker, i+2)
+                if end_pos != -1:
+                    bold_text = text[i+2:end_pos]
+                    segments.append(('bold', bold_text))
+                    i = end_pos + 2
+                    continue
+            
+            # Italic (*text* or _text_)
+            elif text[i] in ['*', '_'] and (i == 0 or text[i-1] not in ['*', '_']):
+                if current_text:
+                    segments.append(('normal', current_text))
+                    current_text = ""
+                
+                # Find closing
+                end_pos = text.find(text[i], i+1)
+                if end_pos != -1 and (end_pos == len(text)-1 or text[end_pos+1] not in ['*', '_']):
+                    italic_text = text[i+1:end_pos]
+                    segments.append(('italic', italic_text))
+                    i = end_pos + 1
+                    continue
+            
+            # Inline code (`code`)
+            elif text[i] == '`':
+                if current_text:
+                    segments.append(('normal', current_text))
+                    current_text = ""
+                
+                # Find closing
+                end_pos = text.find('`', i+1)
+                if end_pos != -1:
+                    code_text = text[i+1:end_pos]
+                    segments.append(('code', code_text))
+                    i = end_pos + 1
+                    continue
+            
+            # Links [text](url)
+            elif text[i] == '[':
+                bracket_end = text.find(']', i)
+                if bracket_end != -1 and bracket_end + 1 < len(text) and text[bracket_end + 1] == '(':
+                    paren_end = text.find(')', bracket_end + 2)
+                    if paren_end != -1:
+                        if current_text:
+                            segments.append(('normal', current_text))
+                            current_text = ""
+                        
+                        link_text = text[i+1:bracket_end]
+                        segments.append(('link', link_text))
+                        i = paren_end + 1
+                        continue
+            
+            current_text += text[i]
+            i += 1
+        
+        if current_text:
+            segments.append(('normal', current_text))
+        
+        return segments
+    
+    def _insert_formatted_text(self, segments, base_tag=None):
+        """Insert formatted text segments into the chat display"""
+        for format_type, text in segments:
+            if format_type == 'bold':
+                self.chat_display.insert(tk.END, text, ("bold", base_tag) if base_tag else "bold")
+            elif format_type == 'italic':
+                self.chat_display.insert(tk.END, text, ("italic", base_tag) if base_tag else "italic")
+            elif format_type == 'code':
+                self.chat_display.insert(tk.END, text, ("code", base_tag) if base_tag else "code")
+            elif format_type == 'link':
+                self.chat_display.insert(tk.END, text, ("link", base_tag) if base_tag else "link")
+            else:
+                self.chat_display.insert(tk.END, text, base_tag)
+    
     def _add_user_message(self, message):
         """Add user message to chat display"""
         self.chat_display.config(state=tk.NORMAL)
@@ -486,7 +684,7 @@ Category Breakdown:"""
         self.chat_history.append({"role": "user", "message": message, "timestamp": timestamp})
     
     def _add_ai_message(self, message):
-        """Add AI message to chat display"""
+        """Add AI message to chat display with markdown rendering"""
         self.chat_display.config(state=tk.NORMAL)
         
         timestamp = datetime.now().strftime("%I:%M %p")
@@ -494,7 +692,9 @@ Category Breakdown:"""
         self.chat_display.insert(tk.END, "\n" if self.chat_history else "")
         self.chat_display.insert(tk.END, "AI Assistant", "ai")
         self.chat_display.insert(tk.END, f" • {timestamp}\n", "timestamp")
-        self.chat_display.insert(tk.END, f"{message}\n")
+        
+        # Render markdown-formatted message
+        self._render_markdown(message)
         
         self.chat_display.config(state=tk.DISABLED)
         self.chat_display.see(tk.END)
@@ -507,6 +707,9 @@ def display_summary_screen(root, auth_manager, dashboard_instance):
     # Clear the root and recreate the dashboard structure
     for widget in root.winfo_children():
         widget.destroy()
+    
+    # Unbind any global mouse wheel events from the previous screen
+    root.unbind_all("<MouseWheel>")
     
     # Main container
     main_container = tk.Frame(root, bg=dashboard_instance.BG_LIGHT)
@@ -528,7 +731,7 @@ def display_summary_screen(root, auth_manager, dashboard_instance):
 
     # ===== CONTENT FRAME =====
     content_frame = tk.Frame(main_container, bg=dashboard_instance.BG_LIGHT)
-    content_frame.grid(row=1, column=1, sticky="nsew", padx=(57, 0))
+    content_frame.grid(row=1, column=1, sticky="nsew", padx=(10, 0))
     
     # Create summary screen in the content area
     SummaryScreen(content_frame, auth_manager, dashboard_instance)
