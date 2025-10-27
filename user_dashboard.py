@@ -11,6 +11,7 @@ import add_expenses # Import the new module
 import records_screen # Import the new module for all transactions
 from all_transactions_screen import display_all_transactions_screen
 from onboarding_screen import display_onboarding_screen
+from summary_screen import display_summary_screen
 
 class UserDashboard:
     def __init__(self, root, auth_manager, app_instance):
@@ -270,10 +271,18 @@ class UserDashboard:
         content_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         content_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
-        # Add mouse wheel scrolling
+        # Add mouse wheel scrolling only when mouse is over the canvas
         def _on_mousewheel(event):
             content_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-        content_canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        
+        def _bind_mousewheel(event):
+            content_canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        
+        def _unbind_mousewheel(event):
+            content_canvas.unbind_all("<MouseWheel>")
+        
+        content_canvas.bind("<Enter>", _bind_mousewheel)
+        content_canvas.bind("<Leave>", _unbind_mousewheel)
         
         # ===== QUICK SNAPSHOT ROW =====
         self._create_quick_snapshot(scrollable_frame)
@@ -1354,10 +1363,18 @@ class UserDashboard:
         sidebar_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         sidebar_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Add mouse wheel scrolling to sidebar
+        # Add mouse wheel scrolling to sidebar only when mouse is over it
         def _on_sidebar_mousewheel(event):
             sidebar_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-        sidebar_canvas.bind_all("<MouseWheel>", _on_sidebar_mousewheel)
+        
+        def _bind_sidebar_mousewheel(event):
+            sidebar_canvas.bind_all("<MouseWheel>", _on_sidebar_mousewheel)
+        
+        def _unbind_sidebar_mousewheel(event):
+            sidebar_canvas.unbind_all("<MouseWheel>")
+        
+        sidebar_canvas.bind("<Enter>", _bind_sidebar_mousewheel)
+        sidebar_canvas.bind("<Leave>", _unbind_sidebar_mousewheel)
 
         # Custom style for the switch toggle
         style = ttk.Style()
@@ -1422,65 +1439,11 @@ class UserDashboard:
             ("🏠", "Home"),
             ("📋", "Records"),
             ("💰", "Budgets"),
+            ("✨", "Summary"),
         ]
         self._create_nav_section(nav_frame, nav_items_main, section_title=None)
 
         tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
-
-        # Settings and Utilities
-        settings_frame = tk.Frame(scrollable_sidebar_frame, bg=self.WHITE, padx=10, pady=10)
-        settings_frame.pack(fill=tk.X, expand=True)
-
-        settings_items = [
-            ("⚙️", "Settings"),
-        ]
-
-        for icon, text, *args in settings_items:
-            item_frame = tk.Frame(settings_frame, bg=self.WHITE, cursor="hand2")
-            item_frame.pack(fill=tk.X, pady=2)
-
-            tk.Label(
-                item_frame,
-                text=icon,
-                font=self.FONT_MD,
-                bg=self.WHITE,
-                fg=self.TEXT_DARK
-            ).pack(side=tk.LEFT, padx=(0, 8), pady=8)
-
-            tk.Label(
-                item_frame,
-                text=text,
-                font=self.FONT_BODY,
-                bg=self.WHITE,
-                fg=self.TEXT_DARK
-            ).pack(side=tk.LEFT, pady=8, anchor="w")
-
-            if text == "Dark mode":
-                toggle_switch = ttk.Checkbutton(item_frame, text="", variable=self.dark_mode_enabled, style="Switch.TCheckbutton", command=self.toggle_dark_mode)
-                toggle_switch.pack(side=tk.RIGHT, padx=5)
-            elif text == "Hide Amounts":
-                toggle_switch = ttk.Checkbutton(item_frame, text="", variable=self.hide_amounts_enabled, style="Switch.TCheckbutton", command=self.toggle_hide_amounts)
-                toggle_switch.pack(side=tk.RIGHT, padx=5)
-            else:
-                pass # No toggle for other items
-            
-            def on_enter(e, frame=item_frame):
-                frame.config(bg=self.BG_LIGHT)
-                for child in frame.winfo_children():
-                    if isinstance(child, tk.Label):
-                        child.config(bg=self.BG_LIGHT)
-
-            def on_leave(e, frame=item_frame):
-                frame.config(bg=self.WHITE)
-                for child in frame.winfo_children():
-                    if isinstance(child, tk.Label):
-                        child.config(bg=self.WHITE)
-            
-            item_frame.bind("<Enter>", on_enter)
-            item_frame.bind("<Leave>", on_leave)
-            # Only bind Button-1 for non-toggle items
-            if text not in ["Dark mode", "Hide Amounts"]:
-                item_frame.bind("<Button-1>", lambda e, txt=text: messagebox.showinfo("Sidebar", f"{txt} clicked!"))
 
     def _create_nav_section(self, parent, items, section_title=None):
         """Helper to create a section of navigation links"""
@@ -1542,11 +1505,17 @@ class UserDashboard:
             item_frame.bind("<Enter>", on_enter)
             item_frame.bind("<Leave>", on_leave)
             
-            if text == "Records":
+            if text == "Home":
+                # Return to home dashboard
+                item_frame.bind("<Button-1>", lambda e: self.display_dashboard())
+            elif text == "Records":
                 item_frame.bind("<Button-1>", lambda e: records_screen.display_records_screen(self.root, self.auth_manager, self))
             elif text == "Budgets":
                 # Open the budget setup window (same as onboarding)
                 item_frame.bind("<Button-1>", lambda e: self.show_budget_window())
+            elif text == "Summary":
+                # Open the AI Summary screen
+                item_frame.bind("<Button-1>", lambda e: display_summary_screen(self.root, self.auth_manager, self))
             else:
                 # Only bind Button-1 for non-toggle items
                 if text not in ["Dark mode", "Hide Amounts"]:
