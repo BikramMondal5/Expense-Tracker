@@ -18,13 +18,13 @@ A simple yet powerful **Python-based Expense Tracker** that helps you take contr
 
 ## 🛠️ Technologies Used
 
-- 🐍 **Python 3.x** – Core programming language  
-- 🪟 **Tkinter** – GUI framework for user interface  
-- 🧮 **NumPy** – Mathematical operations and calculations  
-- 🧾 **pandas** – Data handling and tabular operations  
-- 📊 **Matplotlib** – Data visualization and pie charts
-- 🤖 **Google Gemini** - For AI-powered expense summaries.
-- 📄 **JSON** – For local data storage.
+- **Python 3.x** – Core programming language  
+- **Tkinter** – GUI framework for user interface  
+- **NumPy** – Mathematical operations and calculations  
+- **pandas** – Data handling and tabular operations  
+- **Matplotlib** – Data visualization and pie charts
+- **Google Gemini** - For AI-powered expense summaries.
+- **JSON** – For local data storage.
 
 ## ⚙️ Installation
 
