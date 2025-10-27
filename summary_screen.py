@@ -139,8 +139,8 @@ class SummaryScreen:
         
         # Configure tags for different message types
         self.chat_display.tag_config("user", foreground=self.PRIMARY_COLOR, font=("Segoe UI", 11, "bold"), justify=tk.RIGHT)
-        self.chat_display.tag_config("user_content", justify=tk.RIGHT, rmargin=10, lmargin1=250, 
-                                     background="#FFE5EC", spacing1=8, spacing3=8)
+        self.chat_display.tag_config("user_content", justify=tk.RIGHT, rmargin=5, lmargin1=300,
+                                     background="#FFE5EC", spacing1=2, spacing3=2)
         self.chat_display.tag_config("ai", foreground=self.ACCENT_COLOR, font=("Segoe UI", 11, "bold"), justify=tk.LEFT)
         self.chat_display.tag_config("ai_content", justify=tk.LEFT, lmargin1=10)
         self.chat_display.tag_config("timestamp", foreground=self.TEXT_LIGHT, font=("Segoe UI", 9))
