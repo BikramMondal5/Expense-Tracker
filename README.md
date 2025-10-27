@@ -1,4 +1,4 @@
-# 💰📊 Personal Expense Tracker
+# 💰📊 MyWallet - Personal Expense Tracker
 
 ![Image-preview](./public/screenshot.png)
 A simple yet powerful **Python-based Expense Tracker** that helps you take control of your daily, weekly, and monthly spending habits.  

@@ -1,11 +1,7 @@
-# Requirements for Expense-Tracker
 # Core data & plotting libraries referenced in README
 numpy>=1.24
 pandas>=1.5
 matplotlib>=3.6
-# MongoDB driver for Python (used if you connect to MongoDB)
-pymongo>=4.3
-
 tkcalendar>=1.6
 ReportLab>=4.0.0
 
@@ -14,6 +10,3 @@ google-generativeai>=0.3.0
 
 # Markdown rendering for AI responses
 markdown>=3.4.0
-
-# Note: tkinter is part of the Python standard library on most installations (Windows/macOS). 
-# If your Python distribution does not include tkinter, install it via your OS package manager.
