@@ -138,8 +138,11 @@ class SummaryScreen:
         self.chat_display.pack(fill=tk.BOTH, expand=True)
         
         # Configure tags for different message types
-        self.chat_display.tag_config("user", foreground=self.PRIMARY_COLOR, font=("Segoe UI", 11, "bold"))
-        self.chat_display.tag_config("ai", foreground=self.ACCENT_COLOR, font=("Segoe UI", 11, "bold"))
+        self.chat_display.tag_config("user", foreground=self.PRIMARY_COLOR, font=("Segoe UI", 11, "bold"), justify=tk.RIGHT)
+        self.chat_display.tag_config("user_content", justify=tk.RIGHT, rmargin=10, lmargin1=250, 
+                                     background="#FFE5EC", spacing1=8, spacing3=8)
+        self.chat_display.tag_config("ai", foreground=self.ACCENT_COLOR, font=("Segoe UI", 11, "bold"), justify=tk.LEFT)
+        self.chat_display.tag_config("ai_content", justify=tk.LEFT, lmargin1=10)
         self.chat_display.tag_config("timestamp", foreground=self.TEXT_LIGHT, font=("Segoe UI", 9))
         
         # Configure markdown formatting tags
@@ -322,8 +325,8 @@ class SummaryScreen:
             
             # Add the new message with markdown rendering
             timestamp = datetime.now().strftime("%I:%M %p")
-            self.chat_display.insert(tk.END, "AI Assistant", "ai")
-            self.chat_display.insert(tk.END, f" • {timestamp}\n", "timestamp")
+            self.chat_display.insert(tk.END, "✨ AI Assistant", "ai")
+            self.chat_display.insert(tk.END, f" • {timestamp}\n", ("timestamp", "ai"))
             
             # Render markdown-formatted message
             self._render_markdown(new_message)
@@ -668,15 +671,18 @@ Category Breakdown:"""
                 self.chat_display.insert(tk.END, text, base_tag)
     
     def _add_user_message(self, message):
-        """Add user message to chat display"""
+        """Add user message to chat display aligned to the right with pink background"""
         self.chat_display.config(state=tk.NORMAL)
         
         timestamp = datetime.now().strftime("%I:%M %p")
         
         self.chat_display.insert(tk.END, "\n" if self.chat_history else "")
         self.chat_display.insert(tk.END, "You", "user")
-        self.chat_display.insert(tk.END, f" • {timestamp}\n", "timestamp")
-        self.chat_display.insert(tk.END, f"{message}\n")
+        self.chat_display.insert(tk.END, f" • {timestamp}\n", ("timestamp", "user"))
+        
+        # Add padding with spaces and newlines for the pink background box effect
+        padded_message = f"  {message}  "
+        self.chat_display.insert(tk.END, padded_message + "\n", "user_content")
         
         self.chat_display.config(state=tk.DISABLED)
         self.chat_display.see(tk.END)
@@ -684,14 +690,14 @@ Category Breakdown:"""
         self.chat_history.append({"role": "user", "message": message, "timestamp": timestamp})
     
     def _add_ai_message(self, message):
-        """Add AI message to chat display with markdown rendering"""
+        """Add AI message to chat display with markdown rendering aligned to the left"""
         self.chat_display.config(state=tk.NORMAL)
         
         timestamp = datetime.now().strftime("%I:%M %p")
         
         self.chat_display.insert(tk.END, "\n" if self.chat_history else "")
-        self.chat_display.insert(tk.END, "AI Assistant", "ai")
-        self.chat_display.insert(tk.END, f" • {timestamp}\n", "timestamp")
+        self.chat_display.insert(tk.END, "✨ AI Assistant", "ai")
+        self.chat_display.insert(tk.END, f" • {timestamp}\n", ("timestamp", "ai"))
         
         # Render markdown-formatted message
         self._render_markdown(message)
