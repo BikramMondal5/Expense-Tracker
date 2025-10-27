@@ -856,5 +856,53 @@
                 "timestamp": "2025-10-27 21:26:03"
             }
         ]
+    },
+    "Qwerty3@gmail.com": {
+        "name": "Bikram Mondal",
+        "password": "1db75a38db0403d5ba1123ce4e5054f2298c13c1937a6386799ca077b16fbf4b",
+        "created_at": "2025-10-28T01:16:02.285821",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": 0.0,
+        "bank_balance": 0.0,
+        "credit_card_balance": 0.0,
+        "expenses": []
+    },
+    "We7@gmail.com": {
+        "name": "Bikram",
+        "password": "97918535e9dd6f26ccc95aa7b4e528f8ad3aea3488eaa17ac5575c1887ea51ab",
+        "created_at": "2025-10-28T01:23:45.323310",
+        "monthly_budget": null,
+        "currency": null,
+        "cash_balance": 0.0,
+        "bank_balance": 0.0,
+        "credit_card_balance": 0.0,
+        "expenses": []
+    },
+    "Get0@gmail.com": {
+        "name": "Bikram Mondal",
+        "password": "3967351edb4da53767817056948e1a56d45659c38f23191bcc01d12e3ad4d9ee",
+        "created_at": "2025-10-28T01:26:56.862787",
+        "monthly_budget": 800.0,
+        "currency": "INR",
+        "cash_balance": 0.0,
+        "bank_balance": -420.0,
+        "credit_card_balance": 0.0,
+        "expenses": [
+            {
+                "amount": 250.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-28",
+                "timestamp": "2025-10-28 01:27:55"
+            },
+            {
+                "amount": 420.0,
+                "category": "TRANSPORT",
+                "account": "BANK",
+                "date": "2025-10-28",
+                "timestamp": "2025-10-28 01:29:37"
+            }
+        ]
     }
 }
