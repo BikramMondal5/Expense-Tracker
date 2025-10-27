@@ -10,9 +10,9 @@
         "name": "Bikram Mondal",
         "password": "39a6b8921a1576a53b20a7141c29a8601686d287b6c01f7627c0d87d97c2c836",
         "created_at": "2025-10-19T11:35:22.851655",
-        "monthly_budget": 3000.0,
+        "monthly_budget": 1000.0,
         "currency": "INR",
-        "cash_balance": -1081.2,
+        "cash_balance": 0.0,
         "expenses": [
             {
                 "amount": 20.0,
@@ -821,6 +821,39 @@
                 "account": "CASH",
                 "date": "2025-10-22",
                 "timestamp": "2025-10-22 19:39:37"
+            }
+        ]
+    },
+    "Admin5@gmail.com": {
+        "name": "Bikram Mondal",
+        "password": "0bc89253c0157e463e2f10766846834fdc87eb9bc7b406caa27d3a7a81ca3fe0",
+        "created_at": "2025-10-27T21:24:14.924103",
+        "monthly_budget": 3000.0,
+        "currency": "INR",
+        "cash_balance": 0.0,
+        "bank_balance": -400.0,
+        "credit_card_balance": 0.0,
+        "expenses": [
+            {
+                "amount": 400.0,
+                "category": "FUEL",
+                "account": "BANK",
+                "date": "2025-10-26",
+                "timestamp": "2025-10-26 21:24:53"
+            },
+            {
+                "amount": 249.0,
+                "category": "FOOD",
+                "account": "CASH",
+                "date": "2025-10-27",
+                "timestamp": "2025-10-27 21:25:18"
+            },
+            {
+                "amount": 417.0,
+                "category": "FUEL",
+                "account": "CASH",
+                "date": "2025-10-27",
+                "timestamp": "2025-10-27 21:26:03"
             }
         ]
     }
