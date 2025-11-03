@@ -1,14 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox
 import config
-import onboarding_screen # Import the new module
-import user_dashboard # Import the new module
+import onboarding_screen 
+import user_dashboard 
 
 class UIManager:
     def __init__(self, root, auth_manager, app_instance):
         self.root = root
         self.auth_manager = auth_manager
-        self.app_instance = app_instance # Reference to the main app for screen transitions
+        self.app_instance = app_instance 
         
         # Color scheme - Modern gradient colors
         self.PRIMARY_COLOR = config.PRIMARY_COLOR
@@ -251,7 +251,6 @@ class UIManager:
         signup_link.bind("<Leave>", lambda e: signup_link.config(fg=self.PRIMARY_COLOR))
 
     def show_signup_screen(self):
-        """Display the signup screen"""
         self.clear_frame()
         
         # Main container

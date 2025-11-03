@@ -33,7 +33,6 @@ class AuthManager:
         return hashlib.sha256(password.encode()).hexdigest()
 
     def validate_email(self, email):
-        """Validate email format"""
         pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         return re.match(pattern, email) is not None
 

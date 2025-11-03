@@ -1,24 +1,17 @@
-"""
-Modern Login/Signup Modal with Interactive UI and Onboarding Flow
-Built with Python Tkinter with smooth animations and professional styling
-"""
-
 import tkinter as tk
 from tkinter import messagebox
 
-import config # Import config module
-from auth_manager import AuthManager # Import AuthManager
-from ui_manager import UIManager # Import UIManager
+import config 
+from auth_manager import AuthManager 
+from ui_manager import UIManager 
 
 class LoginSignupApp:
     def __init__(self, root):
-        """Initialize the application"""
         self.root = root
         self.root.title("💰 Expense Tracker")
         self.root.geometry("900x600")
         self.root.resizable(True, True)
         
-        # Color scheme - Modern gradient colors (now loaded from config)
         self.PRIMARY_COLOR = config.PRIMARY_COLOR
         self.SECONDARY_COLOR = config.SECONDARY_COLOR
         self.ACCENT_COLOR = config.ACCENT_COLOR
@@ -29,14 +22,13 @@ class LoginSignupApp:
         self.SUCCESS = config.SUCCESS
         self.ERROR = config.ERROR
         
-        # Remove default window styling
         self.root.configure(bg=self.BG_LIGHT)
         
         # Initialize AuthManager
         self.auth_manager = AuthManager()
         
         # Initialize UIManager
-        self.ui_manager = UIManager(root, self.auth_manager, self) # Pass self for screen transitions
+        self.ui_manager = UIManager(root, self.auth_manager, self) 
         
         # Show login screen
         self.ui_manager.show_login_screen()
@@ -46,7 +38,7 @@ class LoginSignupApp:
         success, message, user_name = self.auth_manager.login(email, password)
         if success:
             messagebox.showinfo("Success", message)
-            self.ui_manager.show_dashboard() # Call UIManager's show_dashboard
+            self.ui_manager.show_dashboard()
         else:
             messagebox.showerror("Error", message)
 
@@ -54,7 +46,7 @@ class LoginSignupApp:
         success, message = self.auth_manager.signup(name, email, password, confirm_password, terms_agreed)
         if success:
             messagebox.showinfo("Success", message)
-            self.ui_manager.show_onboarding_screen() # Call UIManager's show_onboarding_screen
+            self.ui_manager.show_onboarding_screen()
         else:
             messagebox.showerror("Error", message)
     
@@ -62,7 +54,7 @@ class LoginSignupApp:
         success, message = self.auth_manager.onboard_user(monthly_budget, currency_full)
         if success:
             messagebox.showinfo("Setup Complete!", message)
-            self.ui_manager.show_dashboard() # Call UIManager's show_dashboard
+            self.ui_manager.show_dashboard() 
         else:
             messagebox.showerror("Error", message)
 

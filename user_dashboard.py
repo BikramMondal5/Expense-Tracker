@@ -7,8 +7,8 @@ import config
 from tkinter import messagebox
 from datetime import datetime, timedelta
 import math
-import add_expenses # Import the new module
-import records_screen # Import the new module for all transactions
+import add_expenses 
+import records_screen 
 from all_transactions_screen import display_all_transactions_screen
 from onboarding_screen import display_onboarding_screen
 from summary_screen import display_summary_screen
@@ -39,7 +39,7 @@ class UserDashboard:
             "AUD": "A$"
         }
         
-        # Extended color palette for categories
+        # Color palette for categories
         self.CATEGORY_COLORS = {
             'Food': '#FF6B6B',
             'Transport': '#4ECDC4',
