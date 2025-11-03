@@ -51,7 +51,7 @@ class UserDashboard:
 
         # Fonts - Updated hierarchy
         self.FONT_CAPTION = (config.FONT_PRIMARY, 9)
-        self.FONT_BODY = (config.FONT_PRIMARY, 11, "bold") # Made font bold
+        self.FONT_BODY = (config.FONT_PRIMARY, 11, "bold") 
         self.FONT_SM = (config.FONT_PRIMARY, 11)
         self.FONT_MD = (config.FONT_PRIMARY, 12)
         self.FONT_SUBHEADER = (config.FONT_PRIMARY, 12, "bold")
@@ -71,7 +71,6 @@ class UserDashboard:
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days - 1)
 
-        # Filter expenses for summary statistics (total spent, categories) within the specified days and up to now
         summary_filtered_expenses = [exp for exp in expenses if start_date <= datetime.fromisoformat(exp['date']) <= end_date]
 
         total_spent = sum(item['amount'] for item in summary_filtered_expenses)
@@ -84,15 +83,13 @@ class UserDashboard:
         # Sort categories by amount spent for consistent display
         sorted_categories = sorted(category_breakdown.items(), key=lambda item: item[1], reverse=True)
 
-        # For recent transactions, sort all expenses by timestamp and take the latest 6, without date range filtering.
-        # This ensures newly added (past or future) transactions appear if they are truly the most recent additions.
         all_expenses_sorted_by_timestamp = sorted(expenses, key=lambda x: datetime.fromisoformat(x['timestamp']), reverse=True)
         recent_transactions = all_expenses_sorted_by_timestamp[:6]
 
         return total_spent, sorted_categories, recent_transactions
 
     def toggle_dark_mode(self):
-        """Toggle dark mode"""
+       
         self.dark_mode_enabled.set(not self.dark_mode_enabled.get())
         if self.dark_mode_enabled.get():
             messagebox.showinfo("Dark Mode", "Dark mode enabled (UI colors not yet implemented).")
@@ -100,7 +97,6 @@ class UserDashboard:
             messagebox.showinfo("Dark Mode", "Dark mode disabled.")
 
     def toggle_hide_amounts(self):
-        """Toggle hiding of amounts"""
         self.hide_amounts_enabled.set(not self.hide_amounts_enabled.get())
         if self.hide_amounts_enabled.get():
             messagebox.showinfo("Hide Amounts", "Amounts are now hidden.")
@@ -108,7 +104,6 @@ class UserDashboard:
             messagebox.showinfo("Hide Amounts", "Amounts are now visible.")
 
     def clear_frame(self):
-        """Clear all widgets from root"""
         for widget in self.root.winfo_children():
             widget.destroy()
 
@@ -116,12 +111,10 @@ class UserDashboard:
         add_expenses.display_add_expense_screen(self.root, self.auth_manager, self)
 
     def show_add_income_modal(self):
-        # TODO: Implement add income screen
         from tkinter import messagebox
         messagebox.showinfo("Coming Soon", "Add Income feature will be implemented soon!")
 
     def show_budget_window(self):
-        """Show the budget setup window (same as onboarding)"""
         display_onboarding_screen(
             self.root, 
             self.auth_manager, 
@@ -138,11 +131,9 @@ class UserDashboard:
         )
         
     def show_add_budget_modal(self):
-        # Open the budget window (re-uses onboarding logic)
         self.show_budget_window()
         
     def show_edit_budget_modal(self):
-        """Open a modal to edit the user's monthly budget and currency."""
         user_data = self.auth_manager.get_current_user_data() or {}
         current_budget = user_data.get('monthly_budget', 0.0) or 0.0
         current_currency = user_data.get('currency', 'INR')
@@ -171,14 +162,13 @@ class UserDashboard:
             "INR - Indian Rupee (₹)", "USD - US Dollar ($)", "EUR - Euro (€)",
             "GBP - British Pound (£)", "JPY - Japanese Yen (¥)", "AUD - Australian Dollar ($)"
         ]
-        # Prefer the verbose option (e.g. "INR - Indian Rupee (₹)") if available
+
         default_currency_option = next((opt for opt in currency_options if opt.startswith(current_currency)), currency_options[0])
         currency_var = tk.StringVar(value=default_currency_option)
         currency_menu = tk.OptionMenu(frame, currency_var, *currency_options)
         currency_menu.config(font=self.FONT_SM, bd=0, relief=tk.FLAT)
         currency_menu.pack(fill=tk.X, pady=(6, 12))
 
-        # Budget entry
         tk.Label(frame, text="Amount", font=self.FONT_SUBHEADER, bg=self.WHITE, fg=self.TEXT_DARK).pack(anchor="w")
         budget_var = tk.StringVar(value=f"{current_budget:.2f}" if current_budget else "0")
         budget_entry = tk.Entry(frame, textvariable=budget_var, font=(config.FONT_PRIMARY, 16), bd=1, relief=tk.SOLID)
@@ -192,9 +182,7 @@ class UserDashboard:
             if val == "":
                 messagebox.showerror("Error", "Please enter a budget amount")
                 return
-            # Allow commas
             try:
-                # Accept values like "1,000" or "1000.50"
                 parsed = float(val.replace(",", ""))
                 if parsed < 0:
                     messagebox.showerror("Error", "Budget cannot be negative")
@@ -203,7 +191,6 @@ class UserDashboard:
                 messagebox.showerror("Error", "Please enter a valid number for budget")
                 return
 
-            # Use the same format as onboarding: currency full string
             success, msg = self.auth_manager.onboard_user(val, currency_var.get())
             if success:
                 messagebox.showinfo("Success", msg)
@@ -577,11 +564,9 @@ class UserDashboard:
             fg=self.TEXT_DARK
         ).pack(side=tk.LEFT)
         
-        # Placeholder for trend comparison - dynamic calculation would be complex
-        # For now, it will remain static or show a default message
         tk.Label(
             value_frame,
-            text="", # Removed dynamic trend calculation
+            text="", 
             font=self.FONT_CAPTION,
             bg=self.WHITE,
             fg=self.SUCCESS
@@ -622,7 +607,6 @@ class UserDashboard:
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
     
     def _create_expense_breakdown_pie(self, parent):
-        """Create the Expense Breakdown pie chart card"""
         shadow_frame, card_frame = self._create_shadow_card(parent)
         shadow_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 12))
         
@@ -663,7 +647,6 @@ class UserDashboard:
         else:
             categories = [cat for cat, amount in category_breakdown]
             values = [amount for cat, amount in category_breakdown]
-            # Assign colors, cycle through CATEGORY_COLORS or use a default if not found
             colors = [self.CATEGORY_COLORS.get(cat, self.CATEGORY_COLORS['Others']) for cat in categories]
             total_display_amount = f"{currency_symbol}{total_spent_30_days:,.2f}"
         
@@ -680,7 +663,7 @@ class UserDashboard:
         
         # Style the percentage text
         for autotext in autotexts:
-            autotext.set_color(self.TEXT_DARK) # Changed to TEXT_DARK (black)
+            autotext.set_color(self.TEXT_DARK) 
             autotext.set_fontsize(9)
             autotext.set_weight('bold')
         
@@ -703,12 +686,12 @@ class UserDashboard:
         
         # Legend below chart
         legend_frame = tk.Frame(content_frame, bg=self.WHITE)
-        legend_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(12, 0)) # Positioned below
+        legend_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(12, 0)) 
         
         # Arrange items horizontally with wrap-like effect
         row_num = 0
         col_num = 0
-        max_cols = 6 # Changed to 6 items per row
+        max_cols = 6
         
         for category, value, color in zip(categories, values, colors):
             item_frame = tk.Frame(legend_frame, bg=self.WHITE)
@@ -716,14 +699,14 @@ class UserDashboard:
             
             # Color tag (now a circle on canvas)
             color_canvas = tk.Canvas(item_frame, width=16, height=16, bg=self.WHITE, highlightthickness=0)
-            color_canvas.pack(side=tk.LEFT, padx=(0, 8), pady=0) # Adjust pady if needed
+            color_canvas.pack(side=tk.LEFT, padx=(0, 8), pady=0) 
             color_canvas.create_oval(2, 2, 14, 14, fill=color, outline="", width=0)
             
             # Category name
             tk.Label(
                 item_frame,
                 text=category,
-                font=self.FONT_BODY, # Increased font size
+                font=self.FONT_BODY,
                 bg=self.WHITE,
                 fg=self.TEXT_DARK,
                 anchor="w"
@@ -735,7 +718,6 @@ class UserDashboard:
                 row_num += 1
     
     def _create_accounts_carousel(self, parent):
-        """Create the accounts carousel"""
         # Header
         header_frame = tk.Frame(parent, bg=self.BG_LIGHT)
         header_frame.pack(fill=tk.X, pady=(0, 12))
@@ -753,7 +735,6 @@ class UserDashboard:
         carousel_container.pack(fill=tk.X)
         
         canvas = tk.Canvas(carousel_container, bg=self.BG_LIGHT, height=140, highlightthickness=0)
-        # scrollbar = ttk.Scrollbar(carousel_container, orient="horizontal", command=canvas.xview)
         scrollable_frame = tk.Frame(canvas, bg=self.BG_LIGHT)
         
         scrollable_frame.bind(
@@ -762,10 +743,9 @@ class UserDashboard:
         )
         
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(xscrollcommand=None) # Remove horizontal scrollbar
+        canvas.configure(xscrollcommand=None)
         
         canvas.pack(side=tk.TOP, fill=tk.X, expand=True)
-        # scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
         
         currency_code = self.auth_manager.get_current_user_data().get('currency', 'INR')
         currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
@@ -779,7 +759,7 @@ class UserDashboard:
         self._create_account_card(scrollable_frame, "Bank", "🏦", f"{currency_symbol}{bank_balance:.2f}", 
                                    "", "#66BB6A", "#4CAF50", vertical_offset=0)
         self._create_account_card(scrollable_frame, "Credit Card", "💳", f"{currency_symbol}{credit_card_balance:.2f}", 
-                                   "", "#FFA726", "#FF9800", vertical_offset=6) # Increased downward shift further
+                                   "", "#FFA726", "#FF9800", vertical_offset=6)
         
         # Add Account button
         add_btn_frame = tk.Frame(scrollable_frame, bg=self.BG_LIGHT, 
@@ -810,9 +790,7 @@ class UserDashboard:
         add_btn_frame.bind("<Leave>", lambda e: add_btn_frame.config(bg=self.BG_LIGHT))
     
     def _create_account_card(self, parent, account_type, icon, balance, trend, color1, color2, vertical_offset=0):
-        """Create an individual account card with gradient background"""
-        # Note: Tkinter doesn't support gradients natively, so we'll use a solid color
-        card_frame = tk.Frame(parent, bg=color1, width=200, height=120, bd=0, relief=tk.FLAT) # Reverted height for better proportion
+        card_frame = tk.Frame(parent, bg=color1, width=200, height=120, bd=0, relief=tk.FLAT)
         card_frame.pack(side=tk.LEFT, padx=8)
         card_frame.pack_propagate(False)
         
@@ -821,10 +799,10 @@ class UserDashboard:
         content_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5) # Consistent internal padding
         
         # Configure grid for content_frame
-        content_frame.grid_rowconfigure(0, weight=1) # Icon row
-        content_frame.grid_rowconfigure(1, weight=1) # Type row
-        content_frame.grid_rowconfigure(2, weight=1) # Balance row
-        content_frame.grid_rowconfigure(3, weight=1) # Trend row
+        content_frame.grid_rowconfigure(0, weight=1) 
+        content_frame.grid_rowconfigure(1, weight=1) 
+        content_frame.grid_rowconfigure(2, weight=1) 
+        content_frame.grid_rowconfigure(3, weight=1) 
         content_frame.grid_columnconfigure(0, weight=1)
 
         # Frame to hold icon and type on the same row
@@ -840,32 +818,29 @@ class UserDashboard:
             fg=self.WHITE
         ).pack(side=tk.LEFT, anchor="nw")
         
-        # Type
         tk.Label(
             icon_and_type_frame,
             text=account_type,
-            font=self.FONT_BODY, # Increased font size and weight
+            font=self.FONT_BODY, 
             bg=color1,
             fg=self.WHITE
-        ).pack(side=tk.LEFT, anchor="center", padx=(5,0), pady=(vertical_offset,0)) # Apply conditional vertical offset
+        ).pack(side=tk.LEFT, anchor="center", padx=(5,0), pady=(vertical_offset,0))
         
-        # Balance
         tk.Label(
             content_frame,
             text=balance,
             font=self.FONT_BODY,
             bg=color1,
             fg=self.WHITE
-        ).grid(row=1, column=0, sticky="w") # Shifted to row 1
+        ).grid(row=1, column=0, sticky="w")
         
-        # Trend
         tk.Label(
             content_frame,
             text=trend,
             font=self.FONT_CAPTION,
             bg=color1,
             fg=self.WHITE
-        ).grid(row=2, column=0, sticky="sw") # Shifted to row 2
+        ).grid(row=2, column=0, sticky="sw")
         
         # Hover effect
         def on_enter(e):
@@ -888,7 +863,6 @@ class UserDashboard:
         content_frame.bind("<Leave>", on_leave)
     
     def _create_budget_progress(self, parent):
-        """Create the budget progress widget with circular progress ring"""
         shadow_frame, card_frame = self._create_shadow_card(parent)
         shadow_frame.pack(fill=tk.X, pady=(0, 12))
         
@@ -942,11 +916,10 @@ class UserDashboard:
         if percentage <= 80:
             progress_color = self.SUCCESS
         elif percentage <= 100:
-            progress_color = "#F39C12"  # Warning orange
+            progress_color = "#F39C12" 
         else:
             progress_color = self.ERROR
         
-        # Draw arc (starting from top, going clockwise)
         extent = (percentage / 100) * 360
         canvas_widget.create_arc(
             center - radius, center - radius,
@@ -1056,18 +1029,16 @@ class UserDashboard:
         ).pack(pady=(8, 0))
     
     def _create_recent_transactions(self, parent):
-        """Create the recent transactions table with search"""
         shadow_frame, card_frame = self._create_shadow_card(parent)
         shadow_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 12))
         
-        # Header
         header_frame = tk.Frame(card_frame, bg=self.WHITE)
         header_frame.pack(fill=tk.X, pady=(0, 12))
         
         tk.Label(
             header_frame,
             text="Recent Transactions",
-            font=self.FONT_HEADER, # Already FONT_HEADER, keep as is for consistent header sizing
+            font=self.FONT_HEADER,
             bg=self.WHITE,
             fg=self.TEXT_DARK
         ).pack(side=tk.LEFT)
@@ -1085,12 +1056,12 @@ class UserDashboard:
         search_frame = tk.Frame(card_frame, bg="#F7F8FA", bd=0)
         search_frame.pack(fill=tk.X, pady=(0, 12))
         
-        search_icon = tk.Label(search_frame, text="🔍", font=self.FONT_MD, bg="#F7F8FA") # Keep FONT_MD for icon
+        search_icon = tk.Label(search_frame, text="🔍", font=self.FONT_MD, bg="#F7F8FA")
         search_icon.pack(side=tk.LEFT, padx=8)
         
         self.search_entry = tk.Entry(
             search_frame,
-            font=self.FONT_MD, # Increased font size
+            font=self.FONT_MD,
             bg="#F7F8FA",
             fg=self.TEXT_DARK,
             bd=0,
