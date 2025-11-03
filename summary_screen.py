@@ -341,7 +341,7 @@ class SummaryScreen:
         self.chat_display.see(tk.END)
     
     def _generate_ai_response(self, user_message):
-        """Generate AI response using Google Gemini based on user's expense data"""
+        
         # Get current user's email (the logged-in user)
         current_user_email = self.auth_manager.current_user
         

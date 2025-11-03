@@ -944,5 +944,38 @@
                 "timestamp": "2025-11-03 13:03:07"
             }
         ]
+    },
+    "Admin11@gmail.com": {
+        "name": "Bikram Mondal",
+        "password": "34f5581a9a2a52d3b8a95a642107bb54b666f6857d270070f7dfe74de030b7c4",
+        "created_at": "2025-11-03T15:08:44.012504",
+        "monthly_budget": 3000.0,
+        "currency": "INR",
+        "cash_balance": 0.0,
+        "bank_balance": -257.0,
+        "credit_card_balance": -200.0,
+        "expenses": [
+            {
+                "amount": 520.0,
+                "category": "TRANSPORT",
+                "account": "CASH",
+                "date": "2025-11-02",
+                "timestamp": "2025-11-02 15:10:07"
+            },
+            {
+                "amount": 200.0,
+                "category": "UTILITIES",
+                "account": "CREDIT CARD",
+                "date": "2025-11-03",
+                "timestamp": "2025-11-03 15:10:37"
+            },
+            {
+                "amount": 257.0,
+                "category": "ENTERTAINMENT",
+                "account": "BANK",
+                "date": "2025-11-05",
+                "timestamp": "2025-11-05 15:12:03"
+            }
+        ]
     }
 }
