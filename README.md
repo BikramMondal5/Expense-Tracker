@@ -1,6 +1,6 @@
 # 💰📊 MyWallet - Personal Expense Tracker
 
-![Image-preview](./public/screenshot.png)
+![Image-preview](./public/demo_video.mp4)
 A simple yet powerful **Python-based Expense Tracker** that helps you take control of your daily, weekly, and monthly spending habits. Easily add expenses, visualize your spending trends with pie charts, and store all your data locally in a JSON file - all through an intuitive Tkinter GUI.
 
 ## 🌟 Features
@@ -43,7 +43,7 @@ cd Expense-Tracker
 pip install -r requirements.txt
 ```
 
-4. **(Optional) Configure Google Gemini API Key**: 
+4. **Configure Google Gemini API Key**: 
    - Create a `.env` file in the root directory.
    - Add your Google Gemini API key to it like this:
      ```python
