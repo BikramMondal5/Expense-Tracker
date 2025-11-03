@@ -22,15 +22,12 @@ class UIManager:
         self.ERROR = config.ERROR
 
     def clear_frame(self):
-        """Clear all widgets from root"""
         for widget in self.root.winfo_children():
             widget.destroy()
 
     def show_login_screen(self):
-        """Display the login screen"""
         self.clear_frame()
         
-        # Main container with gradient effect
         main_frame = tk.Frame(self.root, bg=self.BG_LIGHT)
         main_frame.pack(fill=tk.BOTH, expand=True)
         main_frame.grid_rowconfigure(0, weight=1)
@@ -157,7 +154,6 @@ class UIManager:
             fg=self.TEXT_DARK,
             relief=tk.FLAT,
             bd=0,
-            show="•",
             width=30
         )
         password_entry.pack(fill=tk.X, ipady=12, pady=(0, 15))
@@ -546,7 +542,6 @@ class UIManager:
         login_link.bind("<Leave>", lambda e: login_link.config(fg=self.SECONDARY_COLOR))
 
     def show_onboarding_screen(self):
-        """Show combined onboarding screen for monthly budget and currency"""
         onboarding_screen.display_onboarding_screen(
             self.root,
             self.auth_manager,
@@ -563,7 +558,6 @@ class UIManager:
         )
 
     def show_dashboard(self):
-        """Show main dashboard (placeholder)"""
         self.clear_frame()
         
         # Instantiate and display the UserDashboard
