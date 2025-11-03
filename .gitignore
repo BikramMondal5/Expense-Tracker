@@ -1,5 +1,6 @@
 users.json
 gemini_config.py
+.env
 venv/
 __pycache__/
 *.pyc
