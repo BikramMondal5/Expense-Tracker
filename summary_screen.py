@@ -3,11 +3,15 @@ from tkinter import ttk, scrolledtext, messagebox
 import config
 from datetime import datetime, timedelta
 import json
+import os
+from dotenv import load_dotenv
 import google.generativeai as genai
-from gemini_config import GEMINI_API_KEY
 import re
 
+load_dotenv()
+
 # Configure Gemini API
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
 class SummaryScreen:
@@ -71,7 +75,7 @@ class SummaryScreen:
             fg=self.TEXT_LIGHT
         ).pack(anchor="w", pady=(5, 0))
         
-        # Content area with two columns
+        # Content area with two column
         content_frame = tk.Frame(main_container, bg=self.WHITE)
         content_frame.pack(fill=tk.BOTH, expand=True, padx=30, pady=10)
         
