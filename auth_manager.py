@@ -13,27 +13,23 @@ class AuthManager:
         self.load_users()
 
     def load_users(self):
-        """Load users from JSON file"""
         if os.path.exists(self.users_file):
             with open(self.users_file, 'r') as f:
                 self.users = json.load(f)
-            # Ensure all loaded users have 'bank_balance' and 'credit_card_balance'
             for user_email in self.users:
                 if "bank_balance" not in self.users[user_email]:
                     self.users[user_email]["bank_balance"] = 0.0
                 if "credit_card_balance" not in self.users[user_email]:
                     self.users[user_email]["credit_card_balance"] = 0.0
-            self.save_users() # Save updated user data with new fields
+            self.save_users()
         else:
             self.users = {}
 
     def save_users(self):
-        """Save users to JSON file"""
         with open(self.users_file, 'w') as f:
             json.dump(self.users, f, indent=4)
 
     def hash_password(self, password):
-        """Hash password for security"""
         return hashlib.sha256(password.encode()).hexdigest()
 
     def validate_email(self, email):
@@ -42,7 +38,6 @@ class AuthManager:
         return re.match(pattern, email) is not None
 
     def validate_password(self, password):
-        """Validate password strength"""
         if len(password) < 6:
             return False, "Password must be at least 6 characters"
         if not any(char.isupper() for char in password):
@@ -52,7 +47,6 @@ class AuthManager:
         return True, "Valid"
 
     def login(self, email, password):
-        """Handle login logic"""
         if not email or not password:
             return False, "Please fill in all fields", None
         
@@ -67,7 +61,6 @@ class AuthManager:
         return True, f"Welcome back, {self.users[email]['name']}!", self.users[email]['name']
 
     def signup(self, name, email, password, confirm_password, terms_agreed):
-        """Handle signup logic"""
         # Validation
         if not name or not email or not password or not confirm_password:
             return False, "Please fill in all fields"
@@ -107,7 +100,7 @@ class AuthManager:
         return True, f"Welcome {name}! Let's set up your account."
 
     def onboard_user(self, monthly_budget, currency_full):
-        """Handle combined monthly budget and currency input"""
+        
         try:
             if monthly_budget == "0" or monthly_budget == "":
                 budget_value = 0.0
