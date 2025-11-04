@@ -295,20 +295,20 @@ class SummaryScreen:
         self._add_user_message(message)
         
         # Show "Thinking..." indicator
-        self._add_ai_message("💭 Analyzing your expenses...")
+        self._add_ai_message("💭 Analyzing your expenses...", token_info=None)
         self.parent_frame.update()
         
         # Generate AI response in background
         try:
-            response = self._generate_ai_response(message)
+            response_text, token_info = self._generate_ai_response(message)
             # Remove the "Thinking..." message
             self.chat_history.pop()
-            self._update_last_ai_message(response)
+            self._update_last_ai_message(response_text, token_info=token_info)
         except Exception as e:
             self.chat_history.pop()
             self._update_last_ai_message(f"❌ Sorry, I encountered an error: {str(e)}\n\nPlease try again or rephrase your question.")
     
-    def _update_last_ai_message(self, new_message):
+    def _update_last_ai_message(self, new_message, token_info=None):
         """Update the last AI message in the chat display with markdown rendering"""
         self.chat_display.config(state=tk.NORMAL)
         
@@ -330,18 +330,23 @@ class SummaryScreen:
             # Add the new message with markdown rendering
             timestamp = datetime.now().strftime("%I:%M %p")
             self.chat_display.insert(tk.END, "✨ AI Assistant", "ai")
-            self.chat_display.insert(tk.END, f" • {timestamp}\n", ("timestamp", "ai"))
+            header_suffix = f" • {timestamp}"
+            if token_info:
+                header_suffix += f" • {token_info}"
+            self.chat_display.insert(tk.END, header_suffix + "\n", ("timestamp", "ai"))
             
             # Render markdown-formatted message
             self._render_markdown(new_message)
             
-            self.chat_history.append({"role": "ai", "message": new_message, "timestamp": timestamp})
+            self.chat_history.append({"role": "ai", "message": new_message, "timestamp": timestamp, "token_info": token_info})
         
         self.chat_display.config(state=tk.DISABLED)
         self.chat_display.see(tk.END)
     
     def _generate_ai_response(self, user_message):
-        
+        """Generate AI response using Google Gemini based on user's expense data.
+        Returns a tuple: (response_text, token_info_str or None)
+        """
         # Get current user's email (the logged-in user)
         current_user_email = self.auth_manager.current_user
         
@@ -360,57 +365,23 @@ class SummaryScreen:
         monthly_budget = user_data.get("monthly_budget", 0)
         user_name = user_data.get("name", "User")
         
-        # Prepare expense data summary for AI
-        expense_summary = self._prepare_expense_data_for_ai(expenses, currency_code, currency_symbol, monthly_budget)
+        # Build TOON-formatted full transaction data for the model (token-efficient)
+        toon_block = self._prepare_expense_data_toon(
+            expenses=expenses,
+            currency_code=currency_code,
+            monthly_budget=monthly_budget,
+            delimiter='\t',
+            task="Summarize spending, highlight top categories, budget status, and 2–4 tips.",
+            question=user_message,
+            max_rows=7
+        )
         
-        # Create the prompt for Gemini
-        system_context = f"""You are an intelligent financial advisor assistant helping {user_name} manage their personal expenses.
-
-User Information:
-- Email: {current_user_email}
-- Currency: {currency_code} ({currency_symbol})
-- Monthly Budget: {currency_symbol}{monthly_budget:,.2f}
-
-{expense_summary}
-
-Your role is to:
-1. Analyze the user's spending patterns and provide actionable insights
-2. Answer questions about their expenses clearly and concisely
-3. Provide personalized recommendations to help them save money
-4. Be encouraging and supportive while being honest about their spending habits
-5. Use emojis to make responses more engaging
-6. Format responses with clear sections and bullet points when appropriate
-
-Guidelines:
-- Keep responses concise but informative (aim for 150-300 words)
-- Always reference specific numbers from their data
-- Provide practical, actionable advice
-- Be positive and encouraging
-- Use the correct currency symbol ({currency_symbol})
-
-IMPORTANT - Formatting Instructions:
-- Use markdown formatting in your responses
-- Use **bold** for emphasis on important numbers or key points
-- Use bullet points (- or •) for lists
-- Use numbered lists (1. 2. 3.) for step-by-step recommendations
-- Use ### for section headings when breaking down complex responses
-- Use emojis at the start of sections or key points for visual appeal
-- Example format:
-  
-  ### 📊 Your Weekly Summary
-  
-  **Total Spent**: {currency_symbol}1,234.56
-  
-  **Top Categories**:
-  - Food: {currency_symbol}450 (36%)
-  - Transport: {currency_symbol}320 (26%)
-  
-  **💡 Recommendations**:
-  1. Try meal prepping to reduce food costs
-  2. Consider carpooling for transport savings
-"""
-
-        user_prompt = f"User Question: {user_message}"
+        # Create a minimal instruction (everything else inside TOON)
+        system_context = (
+            "You are a financial assistant. Read the TOON block and answer concisely with specific numbers and tips."
+        )
+        
+        user_prompt = f"```toon\n{toon_block}\n```"
         
         # Generate response using Gemini
         try:
@@ -421,11 +392,28 @@ IMPORTANT - Formatting Instructions:
             full_prompt = f"{system_context}\n\n{user_prompt}"
             response = chat.send_message(full_prompt)
             
-            return response.text
+            # Extract token usage metadata when available
+            token_info = None
+            try:
+                usage = getattr(response, "usage_metadata", None)
+                if usage is not None:
+                    # Show only the total tokens, no breakdown
+                    prompt_tokens = getattr(usage, "prompt_token_count", None)
+                    candidates_tokens = getattr(usage, "candidates_token_count", None)
+                    total_tokens = getattr(usage, "total_token_count", None)
+                    if total_tokens is not None:
+                        token_info = f"{total_tokens} tok"
+                    elif prompt_tokens is not None or candidates_tokens is not None:
+                        total_est = (prompt_tokens or 0) + (candidates_tokens or 0)
+                        token_info = f"{total_est} tok"
+            except Exception:
+                token_info = None
+            
+            return response.text, token_info
             
         except Exception as e:
             # Fallback to basic response if API fails
-            return f"⚠️ I'm having trouble connecting to the AI service right now.\n\nError: {str(e)}\n\nPlease check your internet connection and try again."
+            return f"⚠️ I'm having trouble connecting to the AI service right now.\n\nError: {str(e)}\n\nPlease check your internet connection and try again.", None
     
     def _prepare_expense_data_for_ai(self, expenses, currency_code, currency_symbol, monthly_budget):
         """Prepare expense data in a format suitable for AI analysis"""
@@ -471,9 +459,8 @@ IMPORTANT - Formatting Instructions:
         weekly_total = sum(float(exp.get("amount", 0)) for exp in weekly_expenses)
         monthly_total = sum(float(exp.get("amount", 0)) for exp in monthly_expenses)
         
-        # Recent transactions (last 5)
+        # Sort transactions (newest first)
         sorted_expenses = sorted(expenses, key=lambda x: x.get("timestamp", x.get("date", "")), reverse=True)
-        recent_5 = sorted_expenses[:5]
         
         # Format the data summary
         summary = f"""Transaction Data Summary:
@@ -495,8 +482,8 @@ Category Breakdown:"""
             percentage = (amount / total_expenses * 100) if total_expenses > 0 else 0
             summary += f"\n- {acc}: {currency_symbol}{amount:,.2f} ({percentage:.1f}%)"
         
-        summary += f"\n\nRecent Transactions (Last 5):"
-        for i, exp in enumerate(recent_5, 1):
+        summary += f"\n\nAll Transactions (Newest First):"
+        for i, exp in enumerate(sorted_expenses, 1):
             amount = float(exp.get("amount", 0))
             category = exp.get("category", "Unknown")
             date = exp.get("date", "Unknown")
@@ -512,6 +499,64 @@ Category Breakdown:"""
             summary += f"\n- Remaining: {currency_symbol}{remaining:,.2f}"
         
         return summary
+    
+    def _prepare_expense_data_toon(self, expenses, currency_code, monthly_budget, delimiter='\t', task=None, question=None, max_rows=None):
+        """Encode full expense rows as TOON (Token-Oriented Object Notation).
+        - Uses a tab-delimited uniform table: expenses[N]{amount,category,account,date}
+        - Includes a small meta section with currency and budget.
+        - Optionally includes a compact task and question for the model.
+        """
+        # Meta section
+        lines = [
+            "meta:",
+            f"  currency: {currency_code}",
+            f"  budget: {float(monthly_budget):.2f}",
+        ]
+        if task:
+            lines.append(f"  task: {task}")
+        if question:
+            lines.append(f"  question: {question}")
+        
+        if not expenses:
+            lines.append("expenses[0]{amount,category,account,date}:")
+            return "\n".join(lines)
+        
+        # Sort newest first and optionally limit rows
+        sorted_expenses = sorted(expenses, key=lambda x: x.get('timestamp', x.get('date', '')), reverse=True)
+        if max_rows is not None:
+            selected_expenses = sorted_expenses[:max_rows]
+        else:
+            selected_expenses = sorted_expenses
+
+        # Header with delimiter indicator when not comma
+        length = len(selected_expenses)
+        delim_indicator = ''
+        if delimiter == '\t':
+            delim_indicator = '\t'  # actual tab to mark tab-delimited per spec
+        elif delimiter == '|':
+            delim_indicator = '|'
+        # fields
+        fields = ['amount', 'category', 'account', 'date']
+        fields_joined = delimiter.join(fields)
+        header = f"expenses[{length}{delim_indicator}]{{{fields_joined}}}:"
+        lines.append(header)
+        
+        # Rows
+        for exp in selected_expenses:
+            amount_val = exp.get('amount', 0)
+            category_val = exp.get('category', 'Unknown')
+            account_val = exp.get('account', 'Unknown')
+            # Prefer ISO date if available
+            date_val = exp.get('date') or exp.get('timestamp', '')
+            row = delimiter.join([
+                str(amount_val),
+                str(category_val),
+                str(account_val),
+                str(date_val),
+            ])
+            lines.append(f"  {row}")
+        
+        return "\n".join(lines)
     
     def _render_markdown(self, text):
         """Render markdown-formatted text to the chat display with proper formatting"""
@@ -693,7 +738,7 @@ Category Breakdown:"""
         
         self.chat_history.append({"role": "user", "message": message, "timestamp": timestamp})
     
-    def _add_ai_message(self, message):
+    def _add_ai_message(self, message, token_info=None):
         """Add AI message to chat display with markdown rendering aligned to the left"""
         self.chat_display.config(state=tk.NORMAL)
         
@@ -701,7 +746,10 @@ Category Breakdown:"""
         
         self.chat_display.insert(tk.END, "\n" if self.chat_history else "")
         self.chat_display.insert(tk.END, "✨ AI Assistant", "ai")
-        self.chat_display.insert(tk.END, f" • {timestamp}\n", ("timestamp", "ai"))
+        header_suffix = f" • {timestamp}"
+        if token_info:
+            header_suffix += f" • {token_info}"
+        self.chat_display.insert(tk.END, header_suffix + "\n", ("timestamp", "ai"))
         
         # Render markdown-formatted message
         self._render_markdown(message)
@@ -709,7 +757,7 @@ Category Breakdown:"""
         self.chat_display.config(state=tk.DISABLED)
         self.chat_display.see(tk.END)
         
-        self.chat_history.append({"role": "ai", "message": message, "timestamp": timestamp})
+        self.chat_history.append({"role": "ai", "message": message, "timestamp": timestamp, "token_info": token_info})
 
 
 def display_summary_screen(root, auth_manager, dashboard_instance):
