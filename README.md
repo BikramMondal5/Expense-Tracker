@@ -1,10 +1,11 @@
 # 💰📊 MyWallet - Personal Expense Tracker
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/BikramMondal5/Expense-Tracker)
+![Google](https://img.shields.io/badge/Google-%23FFFFFF?logo=google&logoColor=%234285F4)
 [![Watch the demo](./public/screenshot.png)](https://youtu.be/PXE6EQHTw1Q)
 A simple yet powerful **Python-based Expense Tracker** that helps you take control of your daily, weekly, and monthly spending habits. Easily add expenses, visualize your spending trends with pie charts, and store all your data locally in a JSON file - all through an intuitive Tkinter GUI.
 
-`🔵 NOTE: Click the image to play the full video.`
+## `🔵 NOTE: Click the image to play the full video.`
 
 ## 🌟 Features
 
@@ -19,8 +20,9 @@ A simple yet powerful **Python-based Expense Tracker** that helps you take contr
 - 🔍 **Filter & Review** – View all transactions, sort them, and export them.
 - 🤖 **AI-Powered Summary** - Get an AI-generated summary of your spending habits using Google Gemini.
 
-## ⬇️ Download
-👉 You can download the `.exe` file from here: [Google_drive_link](https://drive.google.com/drive/folders/1wcgCqpe0CIqLQTrBpwYuEYCv-gDLuiHy?usp=sharing)
+## 🔗 Important Links
+- 👉 You can download the `.exe` file from here: [Google_drive_link](https://drive.google.com/drive/folders/1wcgCqpe0CIqLQTrBpwYuEYCv-gDLuiHy?usp=sharing)
+- 👉 You can find the complete project documentation here: [DeepWiki](https://deepwiki.com/BikramMondal5/Expense-Tracker)
 
 ## 🛠️ Technologies Used
 
