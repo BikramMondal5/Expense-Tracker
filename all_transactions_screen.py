@@ -168,6 +168,43 @@ class AllTransactionsScreen:
             all_expenses = user_data.get('expenses', [])
             currency_code = user_data.get('currency', 'INR')
             currency_symbol = config.CURRENCY_SYMBOLS.get(currency_code, '₹')
+            
+            # Use text-based currency prefix for PDF to avoid font issues
+            pdf_currency_prefix = {
+                'INR': 'Rs.',
+                'USD': '$',
+                'EUR': 'EUR',
+                'GBP': 'GBP',
+                'JPY': 'JPY',
+                'AUD': 'A$',
+                'CAD': 'C$',
+                'CHF': 'CHF',
+                'CNY': 'CNY',
+                'SEK': 'SEK',
+                'NZD': 'NZ$',
+                'MXN': 'Mex$',
+                'SGD': 'S$',
+                'HKD': 'HK$',
+                'NOK': 'NOK',
+                'KRW': 'KRW',
+                'TRY': 'TRY',
+                'RUB': 'RUB',
+                'BRL': 'R$',
+                'ZAR': 'R',
+                'AED': 'AED',
+                'SAR': 'SAR',
+                'QAR': 'QAR',
+                'THB': 'THB',
+                'MYR': 'RM',
+                'IDR': 'Rp',
+                'PHP': 'PHP',
+                'PLN': 'PLN',
+                'DKK': 'DKK',
+                'HUF': 'Ft',
+                'CZK': 'CZK',
+                'ILS': 'ILS',
+            }
+            pdf_currency = pdf_currency_prefix.get(currency_code, currency_code)
 
             doc = SimpleDocTemplate(file_path, pagesize=letter)
             styles = getSampleStyleSheet()
@@ -182,7 +219,7 @@ class AllTransactionsScreen:
             for expense in all_expenses:
                 display_date = datetime.fromisoformat(expense['date']).strftime("%Y-%m-%d")
                 category = expense['category'].capitalize()
-                amount = f"{currency_symbol}{expense['amount']:.2f}"
+                amount = f"{pdf_currency} {expense['amount']:.2f}"
                 account = expense.get('account', 'N/A')
                 timestamp = expense.get('timestamp', 'N/A')
                 data.append([display_date, category, amount, account, timestamp])

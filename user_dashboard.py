@@ -139,7 +139,7 @@ class UserDashboard:
         current_currency = user_data.get('currency', 'INR')
 
         modal = tk.Toplevel(self.root)
-        modal.title("Edit Monthly Budget")
+        modal.title("Add to Monthly Budget")
         modal.geometry("420x300")
         modal.resizable(False, False)
         modal.transient(self.root)
@@ -154,8 +154,8 @@ class UserDashboard:
         frame = tk.Frame(modal, bg=self.WHITE, padx=16, pady=12)
         frame.pack(fill=tk.BOTH, expand=True)
 
-        tk.Label(frame, text="Monthly Budget", font=self.FONT_HEADER, bg=self.WHITE, fg=self.TEXT_DARK).pack(anchor="w")
-        tk.Label(frame, text="Set or update your monthly budget and currency.", font=self.FONT_SM, bg=self.WHITE, fg=self.TEXT_LIGHT).pack(anchor="w", pady=(0,8))
+        tk.Label(frame, text="Add to Monthly Budget", font=self.FONT_HEADER, bg=self.WHITE, fg=self.TEXT_DARK).pack(anchor="w")
+        tk.Label(frame, text=f"Current Budget: {current_budget:.2f}\nEnter amount to add to your budget.", font=self.FONT_SM, bg=self.WHITE, fg=self.TEXT_LIGHT).pack(anchor="w", pady=(0,8))
 
         # Currency selector
         currency_options = [
@@ -169,8 +169,8 @@ class UserDashboard:
         currency_menu.config(font=self.FONT_SM, bd=0, relief=tk.FLAT)
         currency_menu.pack(fill=tk.X, pady=(6, 12))
 
-        tk.Label(frame, text="Amount", font=self.FONT_SUBHEADER, bg=self.WHITE, fg=self.TEXT_DARK).pack(anchor="w")
-        budget_var = tk.StringVar(value=f"{current_budget:.2f}" if current_budget else "0")
+        tk.Label(frame, text="Amount to Add", font=self.FONT_SUBHEADER, bg=self.WHITE, fg=self.TEXT_DARK).pack(anchor="w")
+        budget_var = tk.StringVar(value="0")
         budget_entry = tk.Entry(frame, textvariable=budget_var, font=(config.FONT_PRIMARY, 16), bd=1, relief=tk.SOLID)
         budget_entry.pack(fill=tk.X, pady=(6, 12))
 

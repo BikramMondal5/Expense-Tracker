@@ -113,13 +113,24 @@ class AuthManager:
         
         currency_code = currency_full.split(" - ")[0]
         
-        self.users[self.current_user]["monthly_budget"] = budget_value
+        # Get existing budget, if any
+        existing_budget = self.users[self.current_user].get("monthly_budget", 0.0) or 0.0
+        
+        # Add new budget to existing budget instead of replacing
+        new_total_budget = existing_budget + budget_value
+        
+        self.users[self.current_user]["monthly_budget"] = new_total_budget
         self.users[self.current_user]["currency"] = currency_code
         self.users[self.current_user]["cash_balance"] = 0.0 
         self.save_users()
         
         user_name = self.users[self.current_user]["name"]
-        return True, f"Great job, {user_name}! 🎉\n\nYour account is all set up.\nRedirecting to dashboard."
+        
+        # Provide different messages based on whether this is initial setup or adding to budget
+        if existing_budget == 0:
+            return True, f"Great job, {user_name}! 🎉\n\nYour account is all set up.\nRedirecting to dashboard."
+        else:
+            return True, f"Budget updated successfully! 🎉\n\nAdded {budget_value:.2f} to your budget.\nNew total budget: {new_total_budget:.2f}"
 
     def get_current_user_data(self):
         return self.users.get(self.current_user)
