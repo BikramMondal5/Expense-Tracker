@@ -4,7 +4,7 @@ pandas>=1.5
 matplotlib>=3.6
 tkcalendar>=1.6
 ReportLab>=4.0.0
-
+dotenv
 # Google Gemini AI API
 google-generativeai>=0.3.0
 
