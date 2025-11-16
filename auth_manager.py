@@ -21,6 +21,8 @@ class AuthManager:
                     self.users[user_email]["bank_balance"] = 0.0
                 if "credit_card_balance" not in self.users[user_email]:
                     self.users[user_email]["credit_card_balance"] = 0.0
+                if "cash_balance" not in self.users[user_email]:
+                    self.users[user_email]["cash_balance"] = 0.0
             self.save_users()
         else:
             self.users = {}
@@ -121,7 +123,13 @@ class AuthManager:
         
         self.users[self.current_user]["monthly_budget"] = new_total_budget
         self.users[self.current_user]["currency"] = currency_code
-        self.users[self.current_user]["cash_balance"] = 0.0 
+        
+        if "cash_balance" not in self.users[self.current_user]:
+            self.users[self.current_user]["cash_balance"] = 0.0
+        if "bank_balance" not in self.users[self.current_user]:
+            self.users[self.current_user]["bank_balance"] = 0.0
+        if "credit_card_balance" not in self.users[self.current_user]:
+            self.users[self.current_user]["credit_card_balance"] = 0.0
         self.save_users()
         
         user_name = self.users[self.current_user]["name"]

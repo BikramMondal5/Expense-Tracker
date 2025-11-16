@@ -154,6 +154,7 @@ class UIManager:
             fg=self.TEXT_DARK,
             relief=tk.FLAT,
             bd=0,
+            show="•",
             width=30
         )
         password_entry.pack(fill=tk.X, ipady=12, pady=(0, 15))
