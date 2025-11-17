@@ -3,7 +3,6 @@ from tkinter import messagebox
 import config
 
 def display_onboarding_screen(root, auth_manager, app_instance, primary_color, secondary_color, accent_color, bg_light, text_dark, text_light, white, success, error):
-    """Displays the combined onboarding screen for monthly budget and currency."""
     # Clear existing widgets from root
     for widget in root.winfo_children():
         widget.destroy()
@@ -30,7 +29,7 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
 
     onboarding_icon_label = tk.Label(
         icon_frame,
-        text="🚀",  # Rocket icon for onboarding
+        text="🚀", 
         font=("Segoe UI Emoji", 24),
         bg="#FFFFFF",
         fg="#6366F1"

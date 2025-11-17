@@ -88,14 +88,6 @@ class UserDashboard:
 
         return total_spent, sorted_categories, recent_transactions
 
-    def toggle_dark_mode(self):
-       
-        self.dark_mode_enabled.set(not self.dark_mode_enabled.get())
-        if self.dark_mode_enabled.get():
-            messagebox.showinfo("Dark Mode", "Dark mode enabled (UI colors not yet implemented).")
-        else:
-            messagebox.showinfo("Dark Mode", "Dark mode disabled.")
-
     def toggle_hide_amounts(self):
         self.hide_amounts_enabled.set(not self.hide_amounts_enabled.get())
         if self.hide_amounts_enabled.get():
@@ -204,7 +196,6 @@ class UserDashboard:
         tk.Button(button_frame, text="Save", font=self.FONT_SM, bg=self.PRIMARY_COLOR, fg=self.WHITE, relief=tk.FLAT, command=apply_budget).pack(side=tk.RIGHT)
 
     def _create_shadow_card(self, parent, bg_color=None):
-        """Create a card frame with shadow effect"""
         if bg_color is None:
             bg_color = self.WHITE
         
@@ -215,8 +206,7 @@ class UserDashboard:
         return shadow_frame, card_frame
 
     def display_dashboard(self):
-        """Display the refined, single-screen dashboard"""
-        self.auth_manager.load_users() # Ensure latest data is loaded
+        self.auth_manager.load_users()
         self.clear_frame()
         
         # Main container
@@ -314,7 +304,6 @@ class UserDashboard:
         self._create_fab(main_container)
     
     def _create_header(self, parent):
-        """Create the full-width header"""
         header = tk.Frame(parent, bg=self.PRIMARY_COLOR, height=60)
         header.pack(fill=tk.X)
         header.pack_propagate(False)
@@ -354,16 +343,6 @@ class UserDashboard:
             fg=self.WHITE
         ).pack(pady=(0, 5)) # Removed explicit left padding to allow dynamic centering
         
-        # Current date
-        # Removed current date label
-        # current_date = datetime.now().strftime("%B %d, %Y")
-        # tk.Label(
-        #     center_frame,
-        #     text=current_date,
-        #     font=self.FONT_BODY,
-        #     bg=self.PRIMARY_COLOR,
-        #     fg=self.WHITE
-        # ).pack()
         
         # Right: Notification & User avatar
         right_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
@@ -444,7 +423,7 @@ class UserDashboard:
             icon="📅",
             label="This Week",
             value=f"{currency_symbol}{weekly_spent:,.2f}",
-            trend="", # No dynamic trend for now
+            trend="", 
             trend_color=self.ERROR
         )
         
@@ -479,7 +458,6 @@ class UserDashboard:
         )
     
     def _create_mini_card(self, parent, column, icon, label, value, trend, trend_color):
-        """Create a mini-card for quick snapshot"""
         shadow_frame, card_frame = self._create_shadow_card(parent)
         shadow_frame.grid(row=0, column=column, padx=6, pady=6, sticky="nsew")
         
@@ -529,7 +507,6 @@ class UserDashboard:
         card_frame.bind("<Leave>", on_leave)
     
     def _create_total_expense_kpi(self, parent):
-        """Create the Total Expense KPI card with trend chart"""
         shadow_frame, card_frame = self._create_shadow_card(parent)
         shadow_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 12))
         
@@ -1092,10 +1069,10 @@ class UserDashboard:
         # Configure treeview style
         style = ttk.Style()
         style.theme_use("default") # Use default theme to avoid issues with custom styles if any
-        style.configure("Transactions.Treeview", 
+        style.configure("Transactions.Treeview",
                        background=self.WHITE,
                        foreground=self.TEXT_DARK,
-                       rowheight=30, # Reduced row height for better compactness
+                       rowheight=30,
                        fieldbackground=self.WHITE,
                        borderwidth=0,
                        font=self.FONT_BODY) # Reverted font size for rows
@@ -1150,11 +1127,6 @@ class UserDashboard:
         self.transactions_tree.tag_configure("income", foreground=self.SUCCESS) # If income is ever added
 
         self.transactions_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        
-        # Scrollbar
-        # scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=self.transactions_tree.yview)
-        # self.transactions_tree.configure(yscrollcommand=scrollbar.set)
-        # scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
         # View all link
         view_all = tk.Label(
@@ -1262,13 +1234,12 @@ class UserDashboard:
                 progress_fill.place(relwidth=percentage/100, relheight=1.0)
     
     def _create_fab(self, parent):
-        """Create the floating action button group"""
         # Container for FAB and sub-buttons
         fab_container = tk.Frame(parent, bg=self.BG_LIGHT)
         fab_container.place(relx=1.0, rely=1.0, anchor=tk.SE, x=-20, y=-20) # Adjusted position to be more visible
         
         # Main FAB button - now a circular canvas
-        fab_canvas_size = 60 # Diameter of the circle
+        fab_canvas_size = 60
         self.fab_button_canvas = tk.Canvas(
             fab_container,
             width=fab_canvas_size,
@@ -1396,14 +1367,6 @@ class UserDashboard:
         nav_frame = tk.Frame(scrollable_sidebar_frame, bg=self.WHITE, padx=10, pady=10)
         nav_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Removed top 3 nav items: Get Premium, Bank Sync, Imports
-        # nav_items_top = [
-        #     ("⬆️", "Get Premium"),
-        #     ("🏦", "Bank Sync"),
-        #     ("⬇️", "Imports"),
-        # ]
-        # self._create_nav_section(nav_frame, nav_items_top, section_title=None)
-
         tk.Frame(nav_frame, bg=self.BG_LIGHT, height=1).pack(fill=tk.X, pady=10)
 
         nav_items_main = [
@@ -1492,37 +1455,29 @@ class UserDashboard:
                 if text not in ["Dark mode", "Hide Amounts"]:
                     item_frame.bind("<Button-1>", lambda e, txt=text: messagebox.showinfo("Sidebar", f"{txt} clicked!"))
 
-    # OLD METHODS - TO BE REMOVED OR KEPT FOR COMPATIBILITY
     def toggle_sidebar(self):
-        """Legacy method - no longer used in new dashboard"""
         pass
         
     def show_dashboard(self):
-        """Refresh and display the dashboard"""
         self.display_dashboard()
     
     def show_tab(self, tab_name):
-        """Legacy method - no longer used in new dashboard"""
         pass
     
     def create_home_tab(self, parent_frame):
-        """Legacy method - no longer used in new dashboard"""
         pass
     
     def create_accounts_tab(self, parent_frame):
-        """Legacy method - no longer used in new dashboard"""
         pass
     
     def create_budgets_goals_tab(self, parent_frame):
-        """Legacy method - no longer used in new dashboard"""
         pass
     
     def create_insights_tab(self, parent_frame):
-        """Legacy method - no longer used in new dashboard"""
         pass
     
     def _sort_treeview(self, tree, col, reverse):
-        """Sort treeview columns"""
+  
         l = [(tree.set(k, col), k) for k in tree.get_children('')]
         # Convert amount to float for proper sorting if it's the amount column
         if col == "Amount":
