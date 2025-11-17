@@ -4,7 +4,7 @@
 [![Watch the demo](./public/image9.png)](https://youtu.be/PXE6EQHTw1Q)
 A simple yet powerful **Python-based Expense Tracker** that helps you take control of your daily, weekly, and monthly spending habits. Easily add expenses, visualize your spending trends with pie charts, and store all your data locally in a JSON file - all through an intuitive Tkinter GUI.
 
-## `🔵 NOTE: Click the image to play the full video.`
+## `🔵 NOTE: Click The Above Image To Play The Full Video.`
 
 ## 🌟 Features
 
