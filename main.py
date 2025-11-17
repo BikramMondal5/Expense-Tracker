@@ -24,16 +24,12 @@ class LoginSignupApp:
         
         self.root.configure(bg=self.BG_LIGHT)
         
-        # Initialize AuthManager
         self.auth_manager = AuthManager()
         
-        # Initialize UIManager
         self.ui_manager = UIManager(root, self.auth_manager, self) 
         
-        # Show login screen
         self.ui_manager.show_login_screen()
     
-    # These methods will now be handled by UIManager, but we need to keep the handlers for callbacks
     def handle_login(self, email, password):
         success, message, user_name = self.auth_manager.login(email, password)
         if success:
@@ -71,7 +67,6 @@ class LoginSignupApp:
         self.ui_manager.show_dashboard()
 
 def main():
-    """Main function"""
     root = tk.Tk()
     app = LoginSignupApp(root)
     root.mainloop()

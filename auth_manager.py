@@ -62,7 +62,6 @@ class AuthManager:
         return True, f"Welcome back, {self.users[email]['name']}!", self.users[email]['name']
 
     def signup(self, name, email, password, confirm_password, terms_agreed):
-        # Validation
         if not name or not email or not password or not confirm_password:
             return False, "Please fill in all fields"
         
@@ -82,7 +81,6 @@ class AuthManager:
         if not valid:
             return False, message
         
-        # Create new user
         self.users[email] = {
             "name": name,
             "password": self.hash_password(password),
@@ -115,10 +113,8 @@ class AuthManager:
         
         currency_code = currency_full.split(" - ")[0]
         
-        # Get existing budget, if any
         existing_budget = self.users[self.current_user].get("monthly_budget", 0.0) or 0.0
         
-        # Add new budget to existing budget instead of replacing
         new_total_budget = existing_budget + budget_value
         
         self.users[self.current_user]["monthly_budget"] = new_total_budget
@@ -134,7 +130,6 @@ class AuthManager:
         
         user_name = self.users[self.current_user]["name"]
         
-        # Provide different messages based on whether this is initial setup or adding to budget
         if existing_budget == 0:
             return True, f"Great job, {user_name}! 🎉\n\nYour account is all set up.\nRedirecting to dashboard."
         else:

@@ -5,44 +5,35 @@ from datetime import datetime
 from tkcalendar import Calendar
 
 def display_add_expense_screen(root, auth_manager, dashboard_instance):
-    """Displays the add expense screen as a modal popup."""
-    # Create a modal window (Toplevel)
     modal = tk.Toplevel(root)
     modal.title("Add Expense")
     modal.geometry("450x600")
     modal.resizable(False, False)
     
-    # Make it modal
     modal.transient(root)
     modal.grab_set()
     
-    # Center the modal on screen
     modal.update_idletasks()
-    x = modal.winfo_screenwidth() - 450 - 20  # 20px padding from right edge
-    y = modal.winfo_screenheight() - 600 - 170 # Increased padding from bottom
+    x = modal.winfo_screenwidth() - 450 - 20
+    y = modal.winfo_screenheight() - 600 - 170
     modal.geometry(f"450x600+{x}+{y}")
 
-    # Main container with light blue background
     main_frame = tk.Frame(modal, bg="#00BFFF")
     main_frame.pack(fill=tk.BOTH, expand=True)
-    main_frame.grid_rowconfigure(0, weight=5) # Reduced weight for blue section
-    main_frame.grid_rowconfigure(1, weight=5) # Increased weight for keypad section
+    main_frame.grid_rowconfigure(0, weight=5)
+    main_frame.grid_rowconfigure(1, weight=5)
     main_frame.grid_columnconfigure(0, weight=1)
 
-    # Blue section frame to hold all top elements
     blue_section_frame = tk.Frame(main_frame, bg="#00BFFF")
     blue_section_frame.grid(row=0, column=0, sticky="nsew")
 
-    # Top section with amount display
     top_section = tk.Frame(blue_section_frame, bg="#00BFFF")
     top_section.pack(fill=tk.X)
 
-    # New frame to hold calendar, amount, and currency on the same row
     top_header_row_frame = tk.Frame(blue_section_frame, bg="#00BFFF")
-    top_header_row_frame.pack(fill=tk.X, pady=(10, 0)) # Reduced top padding here
+    top_header_row_frame.pack(fill=tk.X, pady=(10, 0))
 
-    # Back button (calendar icon)
-    date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d")) # Initialize with current date
+    date_var = tk.StringVar(value=datetime.now().strftime("%Y-%m-%d"))
 
     def show_calendar_modal():
         calendar_modal = tk.Toplevel(modal)
@@ -62,19 +53,18 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         tk.Button(calendar_modal, text="Select Date", command=set_date).pack(pady=10)
 
     back_btn = tk.Label(
-        top_header_row_frame, # Packed in the new header row
-        text="📅", # Changed to calendar icon
+        top_header_row_frame,
+        text="📅",
         font=("Segoe UI Emoji", 20),
         bg="#00BFFF",
         fg="white",
         cursor="hand2"
     )
-    back_btn.pack(side=tk.LEFT, anchor="nw", padx=20, pady=0) # Aligned left, no vertical padding
-    back_btn.bind("<Button-1>", lambda e: show_calendar_modal()) # Bind to show_calendar_modal
+    back_btn.pack(side=tk.LEFT, anchor="nw", padx=20, pady=0)
+    back_btn.bind("<Button-1>", lambda e: show_calendar_modal())
 
-    # Amount display frame (now within top_header_row_frame)
     amount_display_frame = tk.Frame(top_header_row_frame, bg="#00BFFF")
-    amount_display_frame.pack(side=tk.RIGHT, expand=True, padx=(0,20)) # Packed right within header row
+    amount_display_frame.pack(side=tk.RIGHT, expand=True, padx=(0,20))
 
     amount_value_label = tk.Label(
         amount_display_frame,
@@ -85,7 +75,6 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     )
     amount_value_label.pack(side=tk.LEFT, expand=True)
 
-    # Get user's currency
     user_data = auth_manager.get_current_user_data()
     currency_code = user_data.get('currency', 'INR')
     
@@ -98,21 +87,18 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     )
     amount_currency_label.pack(side=tk.LEFT, padx=(10, 0))
 
-    # Current Date display (remains below, but adjust padding)
     date_label = tk.Label(
         blue_section_frame,
-        textvariable=date_var, # Use StringVar for dynamic update
+        textvariable=date_var,
         font=("Segoe UI", 12),
         bg="#00BFFF",
         fg="white"
     )
-    date_label.pack(pady=(0, 15)) # Added bottom padding for spacing
+    date_label.pack(pady=(0, 15))
 
-    # Account and Category selection section
     selection_frame = tk.Frame(blue_section_frame, bg="#00BFFF")
-    selection_frame.pack(fill=tk.X, pady=(0, 15)) # Added bottom padding here
+    selection_frame.pack(fill=tk.X, pady=(0, 15))
 
-    # Account selector
     account_frame = tk.Frame(selection_frame, bg="#00BFFF")
     account_frame.pack(side=tk.LEFT, expand=True, padx=20)
 
@@ -138,7 +124,6 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     )
     account_display.pack(pady=(5, 0))
 
-    # Category selector
     category_frame = tk.Frame(selection_frame, bg="#00BFFF")
     category_frame.pack(side=tk.LEFT, expand=True, padx=20)
 
@@ -164,7 +149,6 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     )
     category_display.pack(pady=(5, 0))
 
-    # Simple dropdown functionality for account
     def show_account_menu(event):
         menu = tk.Menu(modal, tearoff=0, font=("Segoe UI", 10))
         for option in account_options:
@@ -174,7 +158,6 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
             )
         menu.post(event.x_root, event.y_root)
 
-    # Simple dropdown functionality for category
     def show_category_menu(event):
         menu = tk.Menu(modal, tearoff=0, font=("Segoe UI", 10))
         for option in category_options:
@@ -190,7 +173,6 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
     def open_templates_modal():
         pass
 
-    # Templates button
     templates_btn = tk.Button(
         blue_section_frame,
         text="TEMPLATES",
@@ -204,21 +186,17 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         activeforeground="white",
         command=open_templates_modal
     )
-    templates_btn.pack(pady=(0, 15)) # Added bottom padding here
+    templates_btn.pack(pady=(0, 15))
 
-    # Function to update the amount display
     def update_amount_display(value):
         current_text = amount_value_label.cget("text")
-        # Ensure only one decimal point
         if "." in current_text and value == ".":
             return
-        # Prevent leading zero unless it's a decimal
         if current_text == "0" and value != ".":
             amount_value_label.config(text=value)
-        elif len(current_text) < 12:  # Limit input length
+        elif len(current_text) < 12:
             amount_value_label.config(text=current_text + value)
     
-    # Function to delete the last character
     def delete_last_char():
         current_text = amount_value_label.cget("text")
         if len(current_text) > 1:
@@ -226,11 +204,9 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         else:
             amount_value_label.config(text="0")
 
-    # Numeric Keypad Section
     keypad_container = tk.Frame(main_frame, bg="lightgray")
     keypad_container.grid(row=1, column=0, sticky="nsew")
 
-    # Keypad frame with light gray background
     keypad_frame = tk.Frame(keypad_container, bg="#F0F0F0")
     keypad_frame.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
 
@@ -241,30 +217,11 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         [".", "0", "⌫",]
     ]
 
-    # Function to handle key presses
     def on_key_press(key):
         if key == "⌫":
             delete_last_char()
         elif key in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]:
             update_amount_display(key)
-
-    # Function to simulate button press visual feedback
-    # def on_key_enter(e):
-    #     if e.widget.cget("text") in ["÷", "×", "-", "+"]:
-    #         e.widget['background'] = "#D0D0D0"
-    #     else:
-    #         e.widget['background'] = "#E0E0E0"
-
-    # def on_key_leave(e):
-    #     if e.widget.cget("text") in ["÷", "×", "-", "+"]:
-    #         e.widget['background'] = "#3591e2" # Blue for operators
-    #     elif e.widget.cget("text") == "⌫":
-    #         e.widget['background'] = "#FF6B6B"  # Light red for backspace
-    #     elif e.widget.cget("text") == ".":
-    #         e.widget['background'] = "#C0C0C0"
-    #     else:
-    #         e.widget['background'] = "#E0E0E0"
-
 
     def process_expense():
         try:
@@ -273,32 +230,26 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
                 messagebox.showwarning("Invalid Amount", "Amount must be greater than zero.")
                 return
 
-            # Get expense details
             account = account_var.get()
             category = category_var.get()
-            date = date_var.get() # Get the selected date
+            date = date_var.get()
             
-            # Here you would typically save to the auth_manager
-            # For now, we'll show a success message and go back to dashboard
             user_data = auth_manager.get_current_user_data()
             
-            # Initialize expenses list if it doesn't exist
             if 'expenses' not in user_data:
                 user_data['expenses'] = []
             
-            # Create expense entry
             expense_entry = {
                 'amount': amount,
                 'category': category,
                 'account': account,
-                'date': date, # Store the selected date
+                'date': date,
                 'timestamp': f"{date} {datetime.now().strftime('%H:%M:%S')}"
             }
             
             user_data['expenses'].append(expense_entry)
             
-            # Update cash balance
-            if account == "CASH": # Assuming only CASH affects cash_balance for now
+            if account == "CASH":
                 user_data['cash_balance'] -= amount
             elif account == "BANK":
                 user_data['bank_balance'] -= amount
@@ -316,25 +267,21 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
-    # Create keypad buttons
     for r_idx, row in enumerate(keys):
         keypad_frame.grid_rowconfigure(r_idx, weight=1)
         
         for c_idx, key in enumerate(row):
             keypad_frame.grid_columnconfigure(c_idx, weight=1)
 
-            # Determine button color based on key type
-            # All numeric and functional keys will have a consistent light grey background and dark text.
             bg_color = "#E0E0E0"
             fg_color = "#333333"
             active_bg_color = "#D0D0D0"
             active_fg_color = "#333333"
 
-            # Specific styling for backspace (X) for visual distinction, if desired, otherwise it will match numbers
             if key == "⌫":
-                bg_color = "#E0E0E0"  # Keep consistent with other keys
-                fg_color = "#333333" # Dark text for backspace symbol
-                active_bg_color = "#FF8F8F" # Slightly redder on hover for delete action
+                bg_color = "#E0E0E0"
+                fg_color = "#333333"
+                active_bg_color = "#FF8F8F"
                 active_fg_color = "white"
 
             key_button = tk.Button(
@@ -352,8 +299,7 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
             )
             key_button.grid(row=r_idx, column=c_idx, sticky="nsew", padx=1, pady=1)
     
-    # Submit button - now in a separate row at the bottom
-    keypad_frame.grid_rowconfigure(len(keys), weight=1) # Configure the new row
+    keypad_frame.grid_rowconfigure(len(keys), weight=1)
     submit_button = tk.Button(
         keypad_frame,
         text="Submit",
@@ -371,42 +317,33 @@ def display_add_expense_screen(root, auth_manager, dashboard_instance):
 
 def display_onboarding_screen(root, auth_manager, app_instance, primary_color, secondary_color, accent_color, bg_light, text_dark, text_light, white, success, error):
     """Displays the combined onboarding screen for monthly budget and currency."""
-    # Clear existing widgets from root
     for widget in root.winfo_children():
         widget.destroy()
 
-    # Main container
     main_frame = tk.Frame(root, bg="#EEF2FF")
     main_frame.pack(fill=tk.BOTH, expand=True)
 
-    # Center content container
     center_frame = tk.Frame(main_frame, bg="#FFFFFF")
     center_frame.place(relx=0.5, rely=0.5, anchor="center", width=500)
 
-
-
-    # Content padding frame
     content_frame = tk.Frame(center_frame, bg=white)
     content_frame.pack(fill=tk.BOTH, expand=True, padx=40, pady=40)
 
-    # Icon
     icon_frame = tk.Frame(content_frame, bg="#FFFFFF", width=80, height=80)
     icon_frame.pack(pady=(10, 20))
     icon_frame.pack_propagate(False)
     icon_frame.layer = True
     icon_frame.config(highlightbackground="#E2E8F0", highlightthickness=1, borderwidth=0, relief=tk.SOLID)
 
-
     onboarding_icon_label = tk.Label(
         icon_frame,
-        text="🚀",  # Rocket icon for onboarding
+        text="🚀",
         font=("Segoe UI Emoji", 30),
         bg="#FFFFFF",
         fg="#6366F1"
     )
     onboarding_icon_label.place(relx=0.5, rely=0.5, anchor="center")
 
-    # Title
     title_label = tk.Label(
         content_frame,
         text="Set up Your Monthly Budget",
@@ -416,7 +353,6 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
     )
     title_label.pack(pady=(10, 5))
 
-    # Subtitle
     subtitle_label = tk.Label(
         content_frame,
         text="Let's set your monthly budget and preferred currency.",
@@ -427,7 +363,6 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
     )
     subtitle_label.pack(pady=(0, 30))
 
-    # Currency selector
     currency_frame = tk.Frame(content_frame, bg=white)
     currency_frame.pack(fill=tk.X, pady=(10, 5))
     
@@ -466,7 +401,6 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
     )
     currency_menu.pack(fill=tk.X, ipady=8)
 
-    # Monthly Budget Input
     budget_display_frame = tk.Frame(content_frame, bg="#F8FAFC", height=60)
     budget_display_frame.pack(fill=tk.X, pady=(10, 15))
     budget_display_frame.pack_propagate(False)
@@ -500,18 +434,14 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
     clear_budget_btn.pack(side=tk.RIGHT, padx=(0, 15))
     clear_budget_btn.bind("<Button-1>", lambda e: budget_value_label.config(text="0"))
     
-    # Function to update the prominent budget display
     def update_budget_display(value):
-        # Ensure only one decimal point
         if "." in budget_value_label.cget("text") and value == ".":
             return
-        # Prevent leading zero unless it's a decimal
         if budget_value_label.cget("text") == "0" and value != ".":
             budget_value_label.config(text=value)
-        elif len(budget_value_label.cget("text")) < 12: # Limit input length
+        elif len(budget_value_label.cget("text")) < 12:
             budget_value_label.config(text=budget_value_label.cget("text") + value)
     
-    # Function to delete the last character
     def delete_last_char():
         current_text = budget_value_label.cget("text")
         if len(current_text) > 1:
@@ -519,16 +449,14 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
         else:
             budget_value_label.config(text="0")
 
-    # Update currency display when selection changes
     def update_currency_display(*args):
         selected = currency_var.get()
         currency_code = selected.split(" - ")[0]
         budget_currency_code_label.config(text=currency_code)
     
     currency_var.trace("w", update_currency_display)
-    update_currency_display() # Initialize currency display
+    update_currency_display()
 
-    # Numeric Keypad
     keypad_frame = tk.Frame(content_frame, bg="#FFFFFF")
     keypad_frame.pack(fill=tk.BOTH, expand=True, pady=(15, 0))
 
@@ -595,7 +523,6 @@ def display_onboarding_screen(root, auth_manager, app_instance, primary_color, s
             if key == "⌫":
                 key_button.config(fg="#312E81")
 
-    # Complete Setup Button
     complete_setup_btn = tk.Button(
         content_frame,
         text="Complete Setup",

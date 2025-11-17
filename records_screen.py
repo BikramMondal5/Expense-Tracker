@@ -15,33 +15,26 @@ periods = [
 ]
 
 def display_records_screen(root, auth_manager, dashboard_instance):
-    """Displays the records screen as a modal popup."""
     print("display_records_screen called!")
-    # Create a modal window (Toplevel)
     modal = tk.Toplevel(root)
     modal.title("Records")
     modal.geometry("450x700")
     modal.resizable(False, False)
     
-    # Make it modal
     modal.transient(root)
     modal.grab_set()
     
-    # Center the modal on screen
     modal.update_idletasks()
     x = (modal.winfo_screenwidth() - 450) // 2
     y = (modal.winfo_screenheight() - 700) // 2
     modal.geometry(f"450x700+{x}+{y}")
 
-    # Main container with primary color background
     main_frame = tk.Frame(modal, bg=config.PRIMARY_COLOR)
     main_frame.pack(fill=tk.BOTH, expand=True)
 
-    # Header section
     header_frame = tk.Frame(main_frame, bg=config.PRIMARY_COLOR)
     header_frame.pack(fill=tk.X, padx=20, pady=15)
 
-    # Menu icon (left) - close button
     menu_icon = tk.Label(
         header_frame,
         text="✕",
@@ -53,7 +46,6 @@ def display_records_screen(root, auth_manager, dashboard_instance):
     menu_icon.pack(side=tk.LEFT, padx=(0, 10))
     menu_icon.bind("<Button-1>", lambda e: modal.destroy())
 
-    # Title (center)
     title_label = tk.Label(
         header_frame,
         text="Records",
@@ -63,7 +55,6 @@ def display_records_screen(root, auth_manager, dashboard_instance):
     )
     title_label.pack(side=tk.LEFT, expand=True)
 
-    # Search and More icons (right)
     icons_frame = tk.Frame(header_frame, bg=config.PRIMARY_COLOR)
     icons_frame.pack(side=tk.RIGHT)
 
@@ -87,15 +78,12 @@ def display_records_screen(root, auth_manager, dashboard_instance):
     )
     more_icon.pack(side=tk.LEFT, padx=5)
 
-    # Time period buttons section
     period_frame = tk.Frame(main_frame, bg=config.PRIMARY_COLOR)
     period_frame.pack(fill=tk.X, padx=20, pady=(0, 15))
 
-    # Variable to track selected period
     selected_period = tk.StringVar(value="1Y")
 
     def update_period_buttons():
-        """Update the appearance of period buttons based on selection"""
         current_period = selected_period.get()
         for btn, period_code in period_buttons:
             btn.configure(
@@ -103,17 +91,14 @@ def display_records_screen(root, auth_manager, dashboard_instance):
                 fg=config.WHITE
             )
 
-    # Summary section (white card)
     summary_frame = tk.Frame(main_frame, bg=config.WHITE)
     summary_frame.pack(fill=tk.X, padx=15, pady=10)
 
-    # Get user data
     user_data = auth_manager.get_current_user_data()
     currency = user_data.get('currency', 'INR')
     currency_symbol = '₹' if currency == 'INR' else '$'
     expenses = user_data.get('expenses', [])
 
-    # Calculate total for selected period
     total_amount = tk.StringVar(value="0.00")
     period_label_text = tk.StringVar(value="LAST 1 YEAR")
 
@@ -137,15 +122,12 @@ def display_records_screen(root, auth_manager, dashboard_instance):
     )
     summary_amount.pack(fill=tk.X, padx=15, pady=(0, 15))
 
-    # Scrollable transactions list - white container
     list_outer_container = tk.Frame(main_frame, bg=config.BG_LIGHT)
     list_outer_container.pack(fill=tk.BOTH, expand=True, padx=15, pady=0)
 
-    # White background container
     list_container = tk.Frame(list_outer_container, bg=config.WHITE)
     list_container.pack(fill=tk.BOTH, expand=True, padx=0, pady=10)
 
-    # Canvas for scrolling
     canvas = tk.Canvas(list_container, bg=config.WHITE, highlightthickness=0)
     scrollbar = tk.Scrollbar(list_container, orient="vertical", command=canvas.yview)
     scrollable_frame = tk.Frame(canvas, bg=config.WHITE)
@@ -161,12 +143,10 @@ def display_records_screen(root, auth_manager, dashboard_instance):
     canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    # Mouse wheel scrolling
     def _on_mousewheel(event):
         canvas.yview_scroll(int(-1*(event.delta/120)), "units")
     canvas.bind_all("<MouseWheel>", _on_mousewheel)
 
-    # Category icons and colors
     category_icons = {
         'FOOD': '🍔',
         'TRANSPORT': '🚌',
@@ -193,7 +173,6 @@ def display_records_screen(root, auth_manager, dashboard_instance):
 
     def create_transaction_card(parent, expense_data, month_label=None):
         """Create a transaction card"""
-        # Month separator if needed
         if month_label:
             separator = tk.Frame(parent, bg=config.WHITE, height=30)
             separator.pack(fill=tk.X)
@@ -205,11 +184,9 @@ def display_records_screen(root, auth_manager, dashboard_instance):
                 fg=config.TEXT_DARK
             ).pack(side=tk.LEFT, padx=15)
 
-        # Transaction card
         card = tk.Frame(parent, bg=config.WHITE, bd=0, relief=tk.FLAT)
         card.pack(fill=tk.X, padx=15, pady=5)
 
-        # Icon circle
         category = expense_data.get('category', 'OTHERS')
         icon = category_icons.get(category, '📦')
         color = category_colors.get(category, '#95A5A6')
@@ -217,17 +194,13 @@ def display_records_screen(root, auth_manager, dashboard_instance):
         icon_canvas = tk.Canvas(card, width=50, height=50, bg=config.WHITE, highlightthickness=0)
         icon_canvas.pack(side=tk.LEFT, padx=15, pady=15)
         
-        # Draw colored circle
         icon_canvas.create_oval(5, 5, 45, 45, fill=color, outline="")
         
-        # Add icon text
         icon_canvas.create_text(25, 25, text=icon, font=("Segoe UI", 20))
 
-        # Details frame
         details_frame = tk.Frame(card, bg=config.WHITE)
         details_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, pady=15)
 
-        # Category name
         category_display = category.replace('_', ', ').title()
         tk.Label(
             details_frame,
@@ -238,7 +211,6 @@ def display_records_screen(root, auth_manager, dashboard_instance):
             anchor="w"
         ).pack(fill=tk.X)
 
-        # Account type
         account = expense_data.get('account', 'Cash')
         tk.Label(
             details_frame,
@@ -249,7 +221,6 @@ def display_records_screen(root, auth_manager, dashboard_instance):
             anchor="w"
         ).pack(fill=tk.X)
 
-        # Amount and date
         amount_frame = tk.Frame(card, bg=config.WHITE)
         amount_frame.pack(side=tk.RIGHT, pady=15, padx=15)
 
@@ -275,11 +246,9 @@ def display_records_screen(root, auth_manager, dashboard_instance):
 
     def filter_expenses_by_period(period, start_date=None, end_date=None):
         """Filter expenses based on selected period"""
-        # Clear existing cards
         for widget in scrollable_frame.winfo_children():
             widget.destroy()
 
-        # Calculate date range
         today = datetime.now().date()
         if period == "custom":
             start_range = start_date

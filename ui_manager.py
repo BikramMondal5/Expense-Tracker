@@ -34,15 +34,12 @@ class UIManager:
         main_frame.grid_columnconfigure(0, weight=1)
         main_frame.grid_columnconfigure(1, weight=1)
         
-        # Left side - Branding (50%)
         left_panel = tk.Frame(main_frame, bg=self.PRIMARY_COLOR)
         left_panel.grid(row=0, column=0, sticky="nsew")
         
-        # Branding content
         brand_frame = tk.Frame(left_panel, bg=self.PRIMARY_COLOR)
         brand_frame.pack(expand=True)
         
-        # Logo/Icon
         logo_label = tk.Label(
             brand_frame,
             text="💰",
@@ -72,7 +69,6 @@ class UIManager:
         )
         subtitle_label.pack(pady=5)
         
-        # Features list
         features_label = tk.Label(
             brand_frame,
             text="✓ Track Expenses\n✓ Analyze Spending\n✓ Visualize Data\n✓ Smart Insights",
@@ -83,15 +79,12 @@ class UIManager:
         )
         features_label.pack(pady=40)
         
-        # Right side - Login form (50%)
         right_panel = tk.Frame(main_frame, bg=self.WHITE)
         right_panel.grid(row=0, column=1, sticky="nsew")
         
-        # Form container with padding
         form_container = tk.Frame(right_panel, bg=self.WHITE)
         form_container.pack(fill=tk.BOTH, expand=True, padx=40, pady=40)
         
-        # Form title
         form_title = tk.Label(
             form_container,
             text="Welcome Back",
@@ -111,7 +104,6 @@ class UIManager:
         )
         form_subtitle.pack(pady=(0, 30))
         
-        # Email field
         email_label = tk.Label(
             form_container,
             text="Email Address",
@@ -133,11 +125,9 @@ class UIManager:
         email_entry.pack(fill=tk.X, ipady=12, pady=(0, 15))
         email_entry.insert(0, "")
         
-        # Add subtle border effect
         email_border = tk.Frame(form_container, bg="#e2e8f0", height=1)
         email_border.pack(fill=tk.X, pady=(0, 15))
         
-        # Password field
         password_label = tk.Label(
             form_container,
             text="Password",
@@ -160,11 +150,9 @@ class UIManager:
         password_entry.pack(fill=tk.X, ipady=12, pady=(0, 15))
         password_entry.insert(0, "")
         
-        # Add subtle border effect
         password_border = tk.Frame(form_container, bg="#e2e8f0", height=1)
         password_border.pack(fill=tk.X, pady=(0, 20))
         
-        # Remember me checkbox
         remember_var = tk.BooleanVar()
         remember_check = tk.Checkbutton(
             form_container,
@@ -181,7 +169,6 @@ class UIManager:
         )
         remember_check.pack(anchor="w", pady=(0, 20))
         
-        # Login button
         login_btn = tk.Button(
             form_container,
             text="Sign In",
@@ -197,7 +184,6 @@ class UIManager:
         )
         login_btn.pack(fill=tk.X, ipady=12, pady=10)
         
-        # Hover effect on login button
         def on_enter(e):
             login_btn.config(bg=self.SECONDARY_COLOR)
         
@@ -207,11 +193,9 @@ class UIManager:
         login_btn.bind("<Enter>", on_enter)
         login_btn.bind("<Leave>", on_leave)
         
-        # Submit on Enter key
         for _widget in (email_entry, password_entry, form_container):
             _widget.bind("<Return>", lambda e: login_btn.invoke())
         
-        # Forgot password link
         forgot_link = tk.Label(
             form_container,
             text="Forgot password?",
@@ -223,7 +207,6 @@ class UIManager:
         forgot_link.pack(pady=15)
         forgot_link.bind("<Button-1>", lambda e: messagebox.showinfo("Info", "Password reset feature coming soon!"))
         
-        # Divider
         divider_label = tk.Label(
             form_container,
             text="Don't have an account?",
@@ -233,7 +216,6 @@ class UIManager:
         )
         divider_label.pack(pady=10)
         
-        # Signup button (text based)
         signup_link = tk.Label(
             form_container,
             text="Sign Up Here",
@@ -257,15 +239,12 @@ class UIManager:
         main_frame.grid_columnconfigure(0, weight=1)
         main_frame.grid_columnconfigure(1, weight=1)
         
-        # Left side - Branding (50%)
         left_panel = tk.Frame(main_frame, bg=self.SECONDARY_COLOR)
         left_panel.grid(row=0, column=0, sticky="nsew")
         
-        # Branding content
         brand_frame = tk.Frame(left_panel, bg=self.SECONDARY_COLOR)
         brand_frame.pack(expand=True)
         
-        # Logo/Icon
         logo_label = tk.Label(
             brand_frame,
             text="🚀",
@@ -295,7 +274,6 @@ class UIManager:
         )
         subtitle_label.pack(pady=5)
         
-        # Benefits
         benefits_label = tk.Label(
             brand_frame,
             text="✓ Free Account\n✓ Secure & Private\n✓ Easy Setup\n✓ Start Tracking Now",
@@ -306,11 +284,9 @@ class UIManager:
         )
         benefits_label.pack(pady=40)
         
-        # Right side - Signup form (50%)
         right_panel = tk.Frame(main_frame, bg=self.WHITE)
         right_panel.grid(row=0, column=1, sticky="nsew")
         
-        # Scrollable form container
         canvas = tk.Canvas(right_panel, bg=self.WHITE, highlightthickness=0)
         scrollbar = tk.Scrollbar(right_panel, orient="vertical", command=canvas.yview)
         canvas.pack(side="left", fill="both", expand=True)
@@ -331,11 +307,9 @@ class UIManager:
 
         canvas.bind("<Configure>", _on_canvas_configure)
         
-        # Form container with padding
         form_container = tk.Frame(scrollable_frame, bg=self.WHITE)
         form_container.pack(fill=tk.BOTH, expand=True, padx=40, pady=30)
         
-        # Form title
         form_title = tk.Label(
             form_container,
             text="Create Account",
@@ -355,7 +329,6 @@ class UIManager:
         )
         form_subtitle.pack(pady=(0, 25))
         
-        # Full name field
         name_label = tk.Label(
             form_container,
             text="Full Name",
@@ -379,7 +352,6 @@ class UIManager:
         name_border = tk.Frame(form_container, bg="#e2e8f0", height=1)
         name_border.pack(fill=tk.X, pady=(0, 15))
         
-        # Email field
         email_label = tk.Label(
             form_container,
             text="Email Address",
@@ -403,7 +375,6 @@ class UIManager:
         email_border = tk.Frame(form_container, bg="#e2e8f0", height=1)
         email_border.pack(fill=tk.X, pady=(0, 15))
         
-        # Password field
         password_label = tk.Label(
             form_container,
             text="Password",
@@ -428,7 +399,6 @@ class UIManager:
         password_border = tk.Frame(form_container, bg="#e2e8f0", height=1)
         password_border.pack(fill=tk.X, pady=(0, 10))
         
-        # Password requirements
         requirements_label = tk.Label(
             form_container,
             text="• At least 6 characters\n• 1 uppercase letter\n• 1 number",
@@ -439,7 +409,6 @@ class UIManager:
         )
         requirements_label.pack(anchor="w", pady=(0, 15))
         
-        # Confirm password field
         confirm_label = tk.Label(
             form_container,
             text="Confirm Password",
@@ -464,7 +433,6 @@ class UIManager:
         confirm_border = tk.Frame(form_container, bg="#e2e8f0", height=1)
         confirm_border.pack(fill=tk.X, pady=(0, 20))
         
-        # Terms checkbox
         terms_var = tk.BooleanVar()
         terms_check = tk.Checkbutton(
             form_container,
@@ -481,7 +449,6 @@ class UIManager:
         )
         terms_check.pack(anchor="w", pady=(0, 20))
         
-        # Signup button
         signup_btn = tk.Button(
             form_container,
             text="Create Account",
@@ -503,7 +470,6 @@ class UIManager:
         )
         signup_btn.pack(fill=tk.X, ipady=12, pady=10)
         
-        # Hover effect
         def on_enter(e):
             signup_btn.config(bg=self.PRIMARY_COLOR)
         
@@ -513,13 +479,11 @@ class UIManager:
         signup_btn.bind("<Enter>", on_enter)
         signup_btn.bind("<Leave>", on_leave)
         
-        # Submit on Enter key for signup
         for _widget in (
             name_entry, email_entry, password_entry, confirm_entry, form_container, scrollable_frame
         ):
             _widget.bind("<Return>", lambda e: signup_btn.invoke())
         
-        # Login link
         divider_label = tk.Label(
             form_container,
             text="Already have an account?",
@@ -561,6 +525,5 @@ class UIManager:
     def show_dashboard(self):
         self.clear_frame()
         
-        # Instantiate and display the UserDashboard
         dashboard_instance = user_dashboard.UserDashboard(self.root, self.auth_manager, self.app_instance)
         dashboard_instance.display_dashboard()

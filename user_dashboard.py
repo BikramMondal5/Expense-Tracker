@@ -297,10 +297,8 @@ class UserDashboard:
         # 2. Recent Transactions Table
         self._create_recent_transactions(right_column)
         
-        # 3. Top 3 Categories
         self._create_top_categories(right_column)
         
-        # ===== FLOATING ACTION BUTTON =====
         self._create_fab(main_container)
     
     def _create_header(self, parent):
@@ -309,46 +307,39 @@ class UserDashboard:
         header.pack_propagate(False)
         header.config(highlightbackground=self.BG_LIGHT, highlightthickness=1)
         
-        # Left: Project Logo
         left_logo_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
-        left_logo_frame.pack(side=tk.LEFT, padx=24, pady=12) # Proper left padding
+        left_logo_frame.pack(side=tk.LEFT, padx=24, pady=12)
         
         tk.Label(
             left_logo_frame,
-            text="📈", # Placeholder for logo
+            text="📈",
             font=self.FONT_XXL,
             bg=self.PRIMARY_COLOR,
             fg=self.WHITE
         ).pack(side=tk.LEFT)
         
-        # Project Name
         tk.Label(
             left_logo_frame,
-            text="MyWallet", # Changed from "WalletWise"
+            text="MyWallet",
             font=self.FONT_XL,
             bg=self.PRIMARY_COLOR,
             fg=self.WHITE
-        ).pack(side=tk.LEFT, padx=(5,0)) # Added left padding for spacing
+        ).pack(side=tk.LEFT, padx=(5,0))
         
-        # Center: App title and Current date
         center_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
         center_frame.pack(side=tk.LEFT, expand=True)
         
-        # App Title
         tk.Label(
             center_frame,
             text="💰 Personal Expense Tracker",
             font=self.FONT_XL,
             bg=self.PRIMARY_COLOR,
             fg=self.WHITE
-        ).pack(pady=(0, 5)) # Removed explicit left padding to allow dynamic centering
+        ).pack(pady=(0, 5))
         
-        
-        # Right: Notification & User avatar
         right_frame = tk.Frame(header, bg=self.PRIMARY_COLOR)
         right_frame.pack(side=tk.RIGHT, padx=24, pady=12)
         
-        # Notification icon
         notif_icon = tk.Label(
             right_frame,
             text="🔔",
@@ -359,7 +350,6 @@ class UserDashboard:
         )
         notif_icon.pack(side=tk.LEFT, padx=8)
         
-        # User avatar
         user_name = self.auth_manager.get_current_user_data().get('name', 'User')
         user_icon = tk.Label(
             right_frame,
@@ -385,7 +375,6 @@ class UserDashboard:
         snapshot_frame = tk.Frame(parent, bg=self.BG_LIGHT)
         snapshot_frame.pack(fill=tk.X, padx=24, pady=24)
         
-        # Configure 4 equal columns
         for i in range(4):
             snapshot_frame.grid_columnconfigure(i, weight=1, uniform="snapshot")
         
@@ -394,30 +383,24 @@ class UserDashboard:
         currency_code = user_data.get('currency', 'INR')
         currency_symbol = self.CURRENCY_SYMBOLS.get(currency_code, '₹')
 
-        # This Week's Spend
         weekly_spent, _, _ = self._calculate_expense_summary(user_expenses, days=7)
         
-        # This Month's Spend
         monthly_spent, _, _ = self._calculate_expense_summary(user_expenses, days=30)
 
-        # Average Daily Spend (Last 30 Days)
         if user_expenses:
             total_spent_30_days, _, _ = self._calculate_expense_summary(user_expenses, days=30)
             avg_daily_spend = total_spent_30_days / 30
         else:
             avg_daily_spend = 0.0
 
-        # Get monthly budget and current month's expenses
         monthly_budget = user_data.get('monthly_budget', 0.0)
         today = datetime.now()
         start_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         current_month_expenses = sum(expense['amount'] for expense in user_expenses
                                   if datetime.fromisoformat(expense['timestamp']) >= start_of_month)
         
-        # Calculate remaining budget for this month
         remaining_budget = monthly_budget - current_month_expenses
 
-        # Card 1: This Week's Spend
         self._create_mini_card(
             snapshot_frame, 0,
             icon="📅",
@@ -427,17 +410,15 @@ class UserDashboard:
             trend_color=self.ERROR
         )
         
-        # Card 2: This Month's Spend
         self._create_mini_card(
             snapshot_frame, 1,
             icon="📆",
             label="This Month",
             value=f"{currency_symbol}{monthly_spent:,.2f}",
-            trend="", # No dynamic trend for now
+            trend="",
             trend_color=self.SUCCESS
         )
         
-        # Card 3: Average Daily Spend
         self._create_mini_card(
             snapshot_frame, 2,
             icon="📊",
@@ -447,7 +428,6 @@ class UserDashboard:
             trend_color=self.TEXT_LIGHT
         )
         
-        # Card 4: Remaining Budget
         self._create_mini_card(
             snapshot_frame, 3,
             icon="💰",
@@ -461,7 +441,6 @@ class UserDashboard:
         shadow_frame, card_frame = self._create_shadow_card(parent)
         shadow_frame.grid(row=0, column=column, padx=6, pady=6, sticky="nsew")
         
-        # Icon
         tk.Label(
             card_frame,
             text=icon,
@@ -470,7 +449,6 @@ class UserDashboard:
             fg=self.TEXT_DARK
         ).pack(pady=(0, 8))
         
-        # Label
         tk.Label(
             card_frame,
             text=label,
@@ -479,7 +457,6 @@ class UserDashboard:
             fg=self.TEXT_LIGHT
         ).pack()
         
-        # Value
         tk.Label(
             card_frame,
             text=value,
@@ -488,7 +465,6 @@ class UserDashboard:
             fg=self.TEXT_DARK
         ).pack(pady=(4, 4))
         
-        # Trend
         tk.Label(
             card_frame,
             text=trend,
@@ -497,7 +473,6 @@ class UserDashboard:
             fg=trend_color
         ).pack()
         
-        # Hover effect
         def on_enter(e):
             shadow_frame.config(bg="#CCCCCC")
         def on_leave(e):
@@ -510,7 +485,6 @@ class UserDashboard:
         shadow_frame, card_frame = self._create_shadow_card(parent)
         shadow_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 12))
         
-        # Header
         header_frame = tk.Frame(card_frame, bg=self.WHITE)
         header_frame.pack(fill=tk.X, pady=(0, 12))
         
@@ -522,7 +496,6 @@ class UserDashboard:
             fg=self.TEXT_DARK
         ).pack(side=tk.LEFT)
         
-        # KPI Value
         user_data = self.auth_manager.get_current_user_data()
         user_expenses = user_data.get('expenses', [])
         currency_code = user_data.get('currency', 'INR')
@@ -549,20 +522,17 @@ class UserDashboard:
             fg=self.SUCCESS
         ).pack(side=tk.LEFT, padx=12)
         
-        # Trend Chart
         chart_frame = tk.Frame(card_frame, bg=self.WHITE)
         chart_frame.pack(fill=tk.BOTH, expand=True)
         
         fig, ax = plt.subplots(figsize=(6, 2.5), dpi=100, facecolor='white')
         
-        # Generate daily expenses for the last 30 days
         daily_expenses = { (datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d"): 0.0 for i in range(30) }
         for expense in user_expenses:
             date_str = expense['date']
             if date_str in daily_expenses:
                 daily_expenses[date_str] += expense['amount']
         
-        # Sort by date and get values
         sorted_dates = sorted(daily_expenses.keys())
         expenses_data = [daily_expenses[date] for date in sorted_dates]
         days = list(range(1, 31))
@@ -574,7 +544,6 @@ class UserDashboard:
         ax.grid(True, linestyle='--', alpha=0.3, color=self.TEXT_LIGHT)
         ax.tick_params(labelsize=8, colors=self.TEXT_LIGHT)
         
-        # Remove top and right spines
         ax.spines['top'].set_visible(False)
         
         plt.tight_layout()
@@ -587,7 +556,6 @@ class UserDashboard:
         shadow_frame, card_frame = self._create_shadow_card(parent)
         shadow_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 12))
         
-        # Header
         header_frame = tk.Frame(card_frame, bg=self.WHITE)
         header_frame.pack(fill=tk.X, pady=(0, 12))
         
